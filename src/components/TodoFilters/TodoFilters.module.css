@@ -1,0 +1,20 @@
+.list {
+	display: flex;
+	justify-content: center;
+	font-size: 24px;
+	gap: 70px;
+	margin-bottom: 20px;
+}
+.list .item {
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	color: darkgrey;
+}
+.list .item:hover {
+	color: #ff607b;
+}
+.list .active {
+	color: #1eafde;
+}
+
+/*# sourceMappingURL=TodoFilters.module.css.map */

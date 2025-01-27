@@ -1,10 +1,9 @@
 import { FC, ReactNode, useState } from "react";
 
-import { ICategoryCount } from "../../types/types.ts";
+import { TodoInfo } from "../../types/types.ts";
 import s from "./TodoFilters.module.scss";
 
-
-type FilterKeys = keyof ICategoryCount;
+type FilterKeys = keyof TodoInfo;
 
 interface IFiltersArray {
 	name: string;
@@ -12,8 +11,8 @@ interface IFiltersArray {
 }
 
 interface TodoFiltersProps {
-	fetchTodos: (filter?: FilterKeys) => Promise<ICategoryCount>;
-	categoryCount: ICategoryCount;
+	fetchTodos: (filter?: FilterKeys) => Promise<void>;
+	categoryCount: TodoInfo;
 }
 
 const TodoFilters: FC<TodoFiltersProps> = ({
@@ -34,18 +33,19 @@ const TodoFilters: FC<TodoFiltersProps> = ({
 	};
 
 	return (
-		<ul className={s.list}>
-			{filtersArray.map((item, i) => (
-				<li
-					onClick={() => handleClickCategory(i)}
-					className={`${s.item} ${selectedFilter === i ? s.active : ""}`}
-					key={i}
-				>
-					{item.name}
-					<span>({categoryCount[item.filter]})</span>
-				</li>
-			))}
-		</ul>
+		<nav>
+			<ul className={s.list}>
+				{filtersArray.map((item, i) => (
+					<li
+						onClick={() => handleClickCategory(i)}
+						className={`${s.item} ${selectedFilter === i ? s.active : ""}`}
+						key={i}
+					>
+						{item.name}({categoryCount[item.filter]})
+					</li>
+				))}
+			</ul>
+		</nav>
 	);
 };
 

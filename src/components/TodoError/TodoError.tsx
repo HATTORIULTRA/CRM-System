@@ -1,17 +1,15 @@
 import { ReactNode, FC } from "react";
 
-const TodoError: FC = (): ReactNode => {
-	const validationStyle = {
-		color: "red",
-		margin: "10px 10px",
-		width: "50%",
-	};
+interface TodoErrorProps {
+	className: string;
+}
 
+const TodoError: FC<TodoErrorProps> = ({ className }): ReactNode => {
 	return (
-		<h3 style={validationStyle}>
-			Задача должна содержать от 2 до 64 <hr /> символов и не иметь запрещённых
+		<p className={className}>
+			Задача должна содержать от 2 до 64 символов и не иметь запрещённых
 			символов
-		</h3>
+		</p>
 	);
 };
 

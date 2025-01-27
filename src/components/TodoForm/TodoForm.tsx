@@ -44,7 +44,7 @@ const TodoForm: FC<TodoFormProps> = ({ fetchTodos }): ReactNode => {
 					Add
 				</button>
 			</form>
-			{error && <TodoError />}
+			{error && <TodoError className={s.validation} />}
 		</div>
 	);
 };

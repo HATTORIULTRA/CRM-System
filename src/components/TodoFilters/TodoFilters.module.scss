@@ -1,19 +1,21 @@
 .list {
-	display: flex;
-	justify-content: center;
-	font-size: 24px;
-	gap: 70px;
-	margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  font-size: 24px;
+  gap: 70px;
+  margin-bottom: 20px;
 
-	.item {
-		cursor: pointer;
-		transition: all 0.2s ease-in-out;
-		color: darkgrey;
-		&:hover {
-			color: #ff607b;
-		}
-	}
-	.active {
-		color: #1eafde;
-	}
+  .item {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    color: darkgrey;
+
+    &:hover {
+      color: #ff607b;
+    }
+  }
+
+  .active {
+    color: #1eafde;
+  }
 }

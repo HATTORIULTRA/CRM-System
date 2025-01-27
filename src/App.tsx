@@ -1,6 +1,6 @@
 import { FC, ReactNode, useEffect, useState } from "react";
-import { httpRequest } from "./api/api.ts";
-import { ICategoryCount, Todo } from "./types/types.ts";
+import { requestFilteredTodos } from "./api/api.ts";
+import { Todo, TodoInfo } from "./types/types.ts";
 
 import TodoForm from "./components/TodoForm/TodoForm.tsx";
 import TodoFilters from "./components/TodoFilters/TodoFilters.tsx";
@@ -10,24 +10,23 @@ import TodoLoading from "./components/TodoLoading/TodoLoading.tsx";
 const App: FC = (): ReactNode => {
 	const [todos, setTodos] = useState<Todo[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [categoryCount, setCategoryCount] = useState<ICategoryCount>({
+	const [categoryCount, setCategoryCount] = useState<TodoInfo>({
 		all: 0,
 		completed: 0,
 		inWork: 0,
 	});
 
-	const fetchTodos = async (filter: string = "all") => {
+	const fetchTodos = async (filter: keyof TodoInfo = "all") => {
 		try {
-			const res = await httpRequest(filter);
+			const res = await requestFilteredTodos(filter);
 
 			setTodos(res.data);
 			setCategoryCount(res.info!);
 			setIsLoading(false);
-
-			return res.info!;
 		} catch (error) {
 			console.error("Fetching todos error", error);
-			return { all: 0, completed: 0, inWork: 0 };
+		} finally {
+			setIsLoading(false);
 		}
 	};
 

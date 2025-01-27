@@ -7,9 +7,13 @@
 	align-items: center;
 	box-shadow: 0 5px 5px -5px rgba(34, 60, 80, 0.6);
 }
+.todoItem .editFormWrapper {
+	position: relative;
+}
 .todoItem .editFormWrapper .validation {
+	position: absolute;
 	color: red;
-	margin: 10px 0;
+	left: 0;
 }
 .todoItem .checkbox {
 	appearance: none;
@@ -78,5 +82,3 @@
 .todoItem .btnGroup .deleteBtn:hover {
 	filter: brightness(1.15);
 }
-
-/*# sourceMappingURL=TodoItem.module.css.map */

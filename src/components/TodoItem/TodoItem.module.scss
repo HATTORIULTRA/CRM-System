@@ -7,9 +7,11 @@
 	box-shadow: 0 5px 5px -5px rgba(34, 60, 80, 0.6);
 
 	.editFormWrapper {
+		position: relative;
 		.validation {
+			position: absolute;
 			color: red;
-			margin: 10px 0;
+			left: 0;
 		}
 	}
 

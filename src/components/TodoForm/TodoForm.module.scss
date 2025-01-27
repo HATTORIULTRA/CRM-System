@@ -1,0 +1,41 @@
+.formWrapper {
+  margin-bottom: 40px;
+  position: relative;
+
+  .validation {
+    position: absolute;
+    color: red;
+    left: 0;
+    width: 100%;
+  }
+
+  .form {
+    display: flex;
+    justify-content: space-between;
+
+    .input {
+      background-color: inherit;
+      border: none;
+      border-bottom: 2px solid #a9a9a9;
+      padding: 13px 10px;
+      font-size: 18px;
+      outline: none;
+      width: 60%;
+      margin-right: 10px;
+    }
+
+    .button {
+      background-color: #5394fe;
+      width: 130px;
+      height: 50px;
+      color: white;
+      font-size: 16px;
+      border-radius: 10px;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        filter: brightness(1.15);
+      }
+    }
+  }
+}

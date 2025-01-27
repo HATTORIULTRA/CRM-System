@@ -1,0 +1,84 @@
+@charset "UTF-8";
+.todoItem {
+	background-color: #fff;
+	display: flex;
+	padding: 15px;
+	border-radius: 5px;
+	align-items: center;
+	box-shadow: 0 5px 5px -5px rgba(34, 60, 80, 0.6);
+}
+.todoItem .editFormWrapper {
+	position: relative;
+}
+.todoItem .editFormWrapper .validation {
+	position: absolute;
+	color: red;
+	left: 0;
+}
+.todoItem .checkbox {
+	appearance: none;
+	position: relative;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #ccc;
+	border-radius: 50%;
+	cursor: pointer;
+}
+.todoItem .checkbox:checked {
+	background-color: #5394fe;
+	border-color: #5394fe;
+}
+.todoItem .checkbox:checked::after {
+	content: "✔";
+	position: absolute;
+	top: 0;
+	left: 20%;
+	color: white;
+	font-size: 12px;
+}
+.todoItem .editInput {
+	background-color: inherit;
+	border: none;
+	border-bottom: 2px solid #a9a9a9;
+	padding: 13px 10px;
+	font-size: 18px;
+	outline: none;
+	margin-left: 10px;
+	width: 60%;
+}
+.todoItem .todoText {
+	margin: 0 20px 0 20px;
+	font-size: 18px;
+	color: black;
+}
+.todoItem .btnGroup {
+	margin-left: auto;
+	display: flex;
+	gap: 10px;
+}
+.todoItem .btnGroup .rewriteBtn {
+	border-radius: 5px;
+	width: 50px;
+	height: 40px;
+	background-color: #5394fe;
+	transition: all 0.2s ease-in-out;
+}
+.todoItem .btnGroup .rewriteBtn .btnIcon {
+	color: white;
+}
+.todoItem .btnGroup .rewriteBtn:hover {
+	filter: brightness(1.15);
+}
+.todoItem .btnGroup .deleteBtn {
+	border-radius: 5px;
+	width: 50px;
+	height: 40px;
+	background-color: #ff6857;
+	transition: all 0.2s ease-in-out;
+}
+.todoItem .btnGroup .deleteBtn .btnIcon {
+	color: white;
+}
+.todoItem .btnGroup .deleteBtn:hover {
+	filter: brightness(1.15);
+}

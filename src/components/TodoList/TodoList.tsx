@@ -1,8 +1,8 @@
 import { FC, ReactNode } from "react";
+import { List } from "antd";
 
 import TodoItem from "../TodoItem/TodoItem.tsx";
 import { Todo } from "../../types/types.ts";
-import s from "./TodoList.module.scss";
 
 interface TodoListProps {
 	todos: Todo[];
@@ -11,11 +11,14 @@ interface TodoListProps {
 
 const TodoList: FC<TodoListProps> = ({ todos, fetchTodos }): ReactNode => {
 	return (
-		<ul className={s.todoList}>
-			{todos.map((item) => (
+		<List
+			size="large"
+			bordered
+			dataSource={todos}
+			renderItem={(item) => (
 				<TodoItem fetchTodos={fetchTodos} key={item.id} {...item} />
-			))}
-		</ul>
+			)}
+		/>
 	);
 };
 

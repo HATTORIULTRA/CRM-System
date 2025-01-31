@@ -17,19 +17,6 @@ body {
 	font-style: normal;
 
 	background-color: #f1f4f9;
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	/*height: 100vh;*/
-	margin: 0;
-	padding-top: 200px;
-}
-
-.app {
-	min-width: 500px;
-	width: 100%;
-	margin: 0 auto;
 }
 
 a,
@@ -63,4 +50,28 @@ li {
 
 button {
 	cursor: pointer;
+}
+
+.demo-logo-vertical {
+	margin: 10px 0 10px 18px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: #a6adb4;
+	font-weight: 500;
+	font-size: 24px;
+}
+
+.logoText {
+	opacity: 0;
+	animation: showAnim 0.3s ease-in forwards;
+}
+
+@keyframes showAnim {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }

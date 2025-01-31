@@ -1,4 +1,5 @@
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode } from "react";
+import { Flex, Radio } from "antd";
 
 import { TodoInfo } from "../../types/types.ts";
 import s from "./TodoFilters.module.scss";
@@ -19,33 +20,34 @@ const TodoFilters: FC<TodoFiltersProps> = ({
 	fetchTodos,
 	categoryCount,
 }): ReactNode => {
-	const [selectedFilter, setSelectedFilter] = useState<number>(0);
-
 	const filtersArray: IFiltersArray[] = [
 		{ name: "Все", filter: "all" },
 		{ name: "в работе", filter: "inWork" },
 		{ name: "сделано", filter: "completed" },
 	];
 
+	const selectedFilter = localStorage.getItem("filter")!;
+
 	const handleClickCategory = (i: number) => {
-		setSelectedFilter(i);
 		fetchTodos(filtersArray[i].filter);
+		localStorage.setItem("filter", filtersArray[i].filter);
 	};
 
 	return (
-		<nav>
-			<ul className={s.list}>
+		<Flex className={s.wrapper} vertical gap="middle">
+			<Radio.Group defaultValue={selectedFilter || 'all'} size="large">
 				{filtersArray.map((item, i) => (
-					<li
+					<Radio.Button
+						className={s.button}
 						onClick={() => handleClickCategory(i)}
-						className={`${s.item} ${selectedFilter === i ? s.active : ""}`}
+						value={item.filter}
 						key={i}
 					>
 						{item.name}({categoryCount[item.filter]})
-					</li>
+					</Radio.Button>
 				))}
-			</ul>
-		</nav>
+			</Radio.Group>
+		</Flex>
 	);
 };
 

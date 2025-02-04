@@ -1,14 +1,19 @@
 import axios from "axios";
 import { MetaResponse, TodoInfo, Todo, TodoRequest } from "../types/types.ts";
 
-const BASE_URL = "https://easydev.club/api/v2";
-axios.defaults.baseURL = BASE_URL;
+const instance = axios.create({
+	baseURL: "https://easydev.club/api/v2",
+});
 
 export const requestFilteredTodos = async (
 	filter: keyof TodoInfo
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
 	try {
-		const res = await axios.get(`/todos?filter=${filter}`);
+		const res = await instance.get(`/todos`, {
+			params: {
+				filter,
+			},
+		});
 		return res.data;
 	} catch (error) {
 		console.log("Cant fetch data", error);
@@ -18,7 +23,7 @@ export const requestFilteredTodos = async (
 
 export const addNewTodo = async (todo: TodoRequest) => {
 	try {
-		await axios.post(`/todos`, {
+		await instance.post(`/todos`, {
 			title: todo.title,
 		});
 	} catch (error) {
@@ -29,7 +34,7 @@ export const addNewTodo = async (todo: TodoRequest) => {
 
 export const deleteTodo = async (id: number) => {
 	try {
-		await axios.delete(`/todos/${id}`);
+		await instance.delete(`/todos/${id}`);
 	} catch (error) {
 		console.log("Cant delete todo", error);
 		throw error;
@@ -38,7 +43,7 @@ export const deleteTodo = async (id: number) => {
 
 export const completeTodo = async (id: number, todo: TodoRequest) => {
 	try {
-		await axios.put(`/todos/${id}`, {
+		await instance.put(`/todos/${id}`, {
 			...todo,
 		});
 	} catch (error) {

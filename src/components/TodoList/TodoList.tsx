@@ -10,6 +10,8 @@ interface TodoListProps {
 }
 
 const TodoList: FC<TodoListProps> = ({ todos, fetchTodos }): ReactNode => {
+	console.log("list rerender");
+
 	return (
 		<List
 			size="large"

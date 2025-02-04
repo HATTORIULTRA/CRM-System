@@ -35,7 +35,7 @@ const TodoFilters: FC<TodoFiltersProps> = ({
 
 	return (
 		<Flex className={s.wrapper} vertical gap="middle">
-			<Radio.Group defaultValue={selectedFilter || 'all'} size="large">
+			<Radio.Group defaultValue={selectedFilter || "all"} size="large">
 				{filtersArray.map((item, i) => (
 					<Radio.Button
 						className={s.button}

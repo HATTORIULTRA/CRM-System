@@ -1,11 +1,12 @@
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import { Todo, TodoInfo } from "../../types/types.ts";
+import { requestFilteredTodos } from "../../api/api.ts";
+
 import s from "./TodoPage.module.scss";
 import TodoForm from "../../components/TodoForm/TodoForm.tsx";
 import TodoFilters from "../../components/TodoFilters/TodoFilters.tsx";
 import TodoLoading from "../../components/TodoLoading/TodoLoading.tsx";
 import TodoList from "../../components/TodoList/TodoList.tsx";
-import { FC, ReactNode, useEffect, useState } from "react";
-import { Todo, TodoInfo } from "../../types/types.ts";
-import { requestFilteredTodos } from "../../api/api.ts";
 
 const TodoPage: FC = (): ReactNode => {
 	const [todos, setTodos] = useState<Todo[]>([]);
@@ -16,10 +17,9 @@ const TodoPage: FC = (): ReactNode => {
 		inWork: 0,
 	});
 
-	const fetchTodos = async (filter: keyof TodoInfo = "all") => {
+	const fetchTodos = useMemo(() => async (filter: keyof TodoInfo = "all") => {
 		try {
 			const res = await requestFilteredTodos(filter);
-
 			setTodos(res.data);
 			setCategoryCount(res.info!);
 			setIsLoading(false);
@@ -28,7 +28,7 @@ const TodoPage: FC = (): ReactNode => {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, [todos]);
 
 	useEffect(() => {
 		fetchTodos();
@@ -38,7 +38,6 @@ const TodoPage: FC = (): ReactNode => {
 		}, 5000);
 		return () => {
 			clearInterval(fetchTimer);
-			console.log("unmount");
 		};
 	}, []);
 

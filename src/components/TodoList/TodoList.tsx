@@ -18,7 +18,7 @@ const TodoList: FC<TodoListProps> = ({ todos, fetchTodos }): ReactNode => {
 			bordered
 			dataSource={todos}
 			renderItem={(item) => (
-				<TodoItem fetchTodos={fetchTodos} key={item.id} {...item} />
+				<TodoItem fetchTodos={fetchTodos} key={item.id} item={item} />
 			)}
 		/>
 	);

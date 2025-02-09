@@ -3,22 +3,16 @@ import { List, Checkbox, Button, Input, Form } from "antd";
 import { FaPenToSquare, FaTrashCan, FaCheck, FaXmark } from "react-icons/fa6";
 
 import { completeTodo, deleteTodo } from "../../api/api.ts";
-import { TodoInfo } from "../../types/types.ts";
+import { Todo, TodoInfo } from "../../types/types.ts";
 import s from "./TodoItem.module.scss";
 
 interface TodoItemProps {
-	id: number;
-	title: string;
-	isDone: boolean;
+	item: Todo;
 	fetchTodos: () => void;
 }
 
-const TodoItem: FC<TodoItemProps> = ({
-	id,
-	title,
-	isDone,
-	fetchTodos,
-}): ReactNode => {
+const TodoItem: FC<TodoItemProps> = ({ item, fetchTodos }): ReactNode => {
+	const { id, title, isDone } = item;
 	const [form] = Form.useForm();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 

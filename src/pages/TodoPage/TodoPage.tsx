@@ -17,29 +17,35 @@ const TodoPage: FC = (): ReactNode => {
 		inWork: 0,
 	});
 
-	const fetchTodos = useMemo(() => async (filter: keyof TodoInfo = "all") => {
-		try {
-			const res = await requestFilteredTodos(filter);
-			setTodos(res.data);
-			setCategoryCount(res.info!);
-			setIsLoading(false);
-		} catch (error) {
-			console.error("Fetching todos error", error);
-		} finally {
-			setIsLoading(false);
-		}
-	}, [todos]);
+	const fetchTodos = useMemo(
+		() =>
+			async (filter: keyof TodoInfo = "all") => {
+				try {
+					const res = await requestFilteredTodos(filter);
+					setTodos(res.data);
+					setCategoryCount(res.info!);
+				} catch (error) {
+					console.error("Fetching todos error", error);
+				} finally {
+					setIsLoading(false);
+				}
+			},
+		[todos]
+	);
 
 	useEffect(() => {
 		fetchTodos();
-		const fetchTimer = setInterval(() => {
-			const filter = localStorage.getItem("filter") as keyof TodoInfo;
-			fetchTodos(filter);
-		}, 5000);
-		return () => {
-			clearInterval(fetchTimer);
-		};
 	}, []);
+
+	// useEffect(() => {
+	// 	const fetchTimer = setInterval(() => {
+	// 		const filter = localStorage.getItem("filter") as keyof TodoInfo;
+	// 		fetchTodos(filter);
+	// 	}, 5000);
+	// 	return () => {
+	// 		clearInterval(fetchTimer);
+	// 	};
+	// }, [todos]);
 
 	return (
 		<div className={s.wrapper}>

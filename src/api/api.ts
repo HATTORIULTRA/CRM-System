@@ -1,18 +1,20 @@
+import axios from "axios";
 import { MetaResponse, TodoInfo, Todo, TodoRequest } from "../types/types.ts";
 
-export const BASE_URL = "https://easydev.club/api/v2";
+const instance = axios.create({
+	baseURL: "https://easydev.club/api/v2",
+});
 
 export const requestFilteredTodos = async (
 	filter: keyof TodoInfo
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
 	try {
-		const res = await fetch(`${BASE_URL}/todos?filter=${filter}`, {
-			method: "GET",
-			headers: {
-				"Content-type": "application/json",
+		const res = await instance.get(`/todos`, {
+			params: {
+				filter,
 			},
 		});
-		return res.json();
+		return res.data;
 	} catch (error) {
 		console.log("Cant fetch data", error);
 		throw error;
@@ -21,41 +23,31 @@ export const requestFilteredTodos = async (
 
 export const addNewTodo = async (todo: TodoRequest) => {
 	try {
-		await fetch(`${BASE_URL}/todos`, {
-			method: "POST",
-			body: JSON.stringify(todo),
-			headers: {
-				"Content-type": "application/json",
-			},
+		await instance.post(`/todos`, {
+			title: todo.title,
 		});
-	} catch (e) {
-		console.log("Cant add new todo", e);
+	} catch (error) {
+		console.log("Cant add new todo", error);
+		throw error;
 	}
 };
 
 export const deleteTodo = async (id: number) => {
 	try {
-		await fetch(`${BASE_URL}/todos/${id}`, {
-			method: "DELETE",
-			headers: {
-				"Content-type": "application/json",
-			},
-		});
-	} catch (e) {
-		console.log("Cant delete todo", e);
+		await instance.delete(`/todos/${id}`);
+	} catch (error) {
+		console.log("Cant delete todo", error);
+		throw error;
 	}
 };
 
 export const completeTodo = async (id: number, todo: TodoRequest) => {
 	try {
-		await fetch(`${BASE_URL}/todos/${id}`, {
-			method: "PUT",
-			body: JSON.stringify(todo),
-			headers: {
-				"Content-type": "application/json",
-			},
+		await instance.put(`/todos/${id}`, {
+			...todo,
 		});
-	} catch (e) {
-		console.log("Cant complete todo", e);
+	} catch (error) {
+		console.log("Cant complete todo", error);
+		throw error;
 	}
 };

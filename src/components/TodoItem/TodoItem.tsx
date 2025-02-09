@@ -1,34 +1,27 @@
 import { FC, ReactNode, useState } from "react";
+import { List, Checkbox, Button, Input, Form } from "antd";
 import { FaPenToSquare, FaTrashCan, FaCheck, FaXmark } from "react-icons/fa6";
 
 import { completeTodo, deleteTodo } from "../../api/api.ts";
-import Button from "../Button/Button.tsx";
-import TodoError from "../TodoError/TodoError.tsx";
+import { Todo, TodoInfo } from "../../types/types.ts";
 import s from "./TodoItem.module.scss";
 
 interface TodoItemProps {
-	id: number;
-	title: string;
-	isDone: boolean;
+	item: Todo;
 	fetchTodos: () => void;
 }
 
-const TodoItem: FC<TodoItemProps> = ({
-	id,
-	title,
-	isDone,
-	fetchTodos,
-}): ReactNode => {
-	const [editedTitle, setEditedTitle] = useState<string>(title);
-	const [error, setError] = useState<boolean>(false);
+const TodoItem: FC<TodoItemProps> = ({ item, fetchTodos }): ReactNode => {
+	const { id, title, isDone } = item;
+	const [form] = Form.useForm();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 
 	const handleClickDelete = async (id: number) => {
 		try {
 			await deleteTodo(id);
 			await fetchTodos();
-		} catch (e) {
-			console.log("Cant delete todo", e);
+		} catch (error) {
+			console.log("Cant delete todo", error);
 		}
 	};
 
@@ -36,8 +29,8 @@ const TodoItem: FC<TodoItemProps> = ({
 		try {
 			await completeTodo(id, { title, isDone: !isDone });
 			await fetchTodos();
-		} catch (e) {
-			console.log("Cant delete todo", e);
+		} catch (error) {
+			console.log("Cant delete todo", error);
 		}
 	};
 
@@ -49,19 +42,13 @@ const TodoItem: FC<TodoItemProps> = ({
 		setIsEdit(false);
 	};
 
-	const handleAcceptEdit = async (id: number, newTitle: string) => {
-		const trimTitle = newTitle.trim();
-		const regex = /^[a-zA-Z0-9а-яА-ЯёЁ.,!?() ]{2,64}$/;
-		if (!regex.test(trimTitle)) {
-			setError(true);
-		} else {
-			try {
-				await completeTodo(id, { title: trimTitle, isDone });
-				await fetchTodos();
-				setIsEdit(false);
-			} catch (e) {
-				console.log("Cant update todos text", e);
-			}
+	const onFinish = async (values: TodoInfo) => {
+		try {
+			await completeTodo(id, { ...values, isDone });
+			await fetchTodos();
+			setIsEdit(false);
+		} catch (error) {
+			console.log("Cant update todos text", error);
 		}
 	};
 
@@ -71,58 +58,87 @@ const TodoItem: FC<TodoItemProps> = ({
 	};
 
 	return (
-		<li className={s.todoItem}>
-			<input
-				onClick={() => handleClickComplete(id, isDone)}
+		<List.Item className={s.wrapper}>
+			<Checkbox
 				defaultChecked={isDone}
-				className={s.checkbox}
-				type="checkbox"
+				onChange={() => handleClickComplete(id, isDone)}
 			/>
 
 			{isEdit ? (
-				<div className={s.editFormWrapper}>
-					<input
-						value={editedTitle}
-						onChange={(e) => {
-							setEditedTitle(e.target.value);
-							setError(false);
-						}}
-						className={s.editInput}
-						type="text"
-						placeholder="new text"
-						autoFocus
-					/>
-					{error && <TodoError className={s.validation} />}
-				</div>
+				<Form
+					className={s.form}
+					form={form}
+					name="editForm"
+					layout="inline"
+					autoComplete="off"
+					onFinish={onFinish}
+				>
+					<Form.Item
+						name="title"
+						rules={[
+							{
+								required: true,
+								message: "Введите название todo!",
+							},
+							{
+								min: 2,
+								message: "Количество символов должно быть больше 2!",
+							},
+							{
+								max: 64,
+								message: "Количество символов должно быть меньше 64!",
+							},
+							{
+								whitespace: true,
+								message: "Название не может состоять из пробелов!",
+							},
+							{
+								pattern: /^[A-Za-z0-9\s\-_,\.;:()]+$/,
+								message: "Только латинские буквы и цифры!",
+							},
+						]}
+					>
+						<Input
+							className={s.editInput}
+							type="title"
+							placeholder="new title"
+							autoFocus
+						/>
+					</Form.Item>
+
+					<Form.Item>
+						<Button type="primary" htmlType="submit">
+							<FaCheck />
+						</Button>
+					</Form.Item>
+					<Form.Item>
+						<Button onClick={handleCancelClick} color="danger" variant="solid">
+							<FaXmark />
+						</Button>
+					</Form.Item>
+				</Form>
 			) : (
 				<h3 style={isDone ? completedStyles : undefined} className={s.todoText}>
 					{title}
 				</h3>
 			)}
 
-			{isEdit ? (
-				<div className={s.btnGroup}>
+			{!isEdit && (
+				<div>
+					<Button onClick={handleClickEdit} type="primary" className={s.button}>
+						<FaPenToSquare />
+					</Button>
 					<Button
-						onClick={() => handleAcceptEdit(id, editedTitle)}
-						className={s.rewriteBtn}
+						onClick={() => handleClickDelete(id)}
+						color="danger"
+						variant="solid"
+						className={s.button}
 					>
-						<FaCheck className={s.btnIcon} />
-					</Button>
-					<Button onClick={handleCancelClick} className={s.deleteBtn}>
-						<FaXmark className={s.btnIcon} />
-					</Button>
-				</div>
-			) : (
-				<div className={s.btnGroup}>
-					<Button onClick={handleClickEdit} className={s.rewriteBtn}>
-						<FaPenToSquare className={s.btnIcon} />
-					</Button>
-					<Button onClick={() => handleClickDelete(id)} className={s.deleteBtn}>
-						<FaTrashCan className={s.btnIcon} />
+						<FaTrashCan />
 					</Button>
 				</div>
 			)}
-		</li>
+		</List.Item>
 	);
 };
 

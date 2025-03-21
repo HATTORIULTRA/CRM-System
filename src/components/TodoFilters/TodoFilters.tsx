@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import { Flex, Radio } from "antd";
 
-import { TodoInfo } from "../../types/types.ts";
+import { TodoInfo } from "../../types/apiTypes.ts";
 import s from "./TodoFilters.module.scss";
 
 type FilterKeys = keyof TodoInfo;

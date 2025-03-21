@@ -1,9 +1,11 @@
-import axios from "axios";
-import { MetaResponse, TodoInfo, Todo, TodoRequest } from "../types/types.ts";
+import instance from "./axios.ts";
 
-const instance = axios.create({
-	baseURL: "https://easydev.club/api/v2",
-});
+import {
+	MetaResponse,
+	TodoInfo,
+	Todo,
+	TodoRequest,
+} from "../types/apiTypes.ts";
 
 export const requestFilteredTodos = async (
 	filter: keyof TodoInfo

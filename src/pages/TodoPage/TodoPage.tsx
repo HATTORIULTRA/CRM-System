@@ -1,12 +1,12 @@
 import { FC, ReactNode, useEffect, useMemo, useState } from "react";
-import { Todo, TodoInfo } from "../../types/types.ts";
-import { requestFilteredTodos } from "../../api/api.ts";
+import { Todo, TodoInfo } from "../../types/apiTypes.ts";
+import { requestFilteredTodos } from "../../api/todosAPI.ts";
 
-import s from "./TodoPage.module.scss";
 import TodoForm from "../../components/TodoForm/TodoForm.tsx";
 import TodoFilters from "../../components/TodoFilters/TodoFilters.tsx";
 import TodoLoading from "../../components/TodoLoading/TodoLoading.tsx";
 import TodoList from "../../components/TodoList/TodoList.tsx";
+import s from "./TodoPage.module.scss";
 
 const TodoPage: FC = (): ReactNode => {
 	const [todos, setTodos] = useState<Todo[]>([]);
@@ -37,15 +37,15 @@ const TodoPage: FC = (): ReactNode => {
 		fetchTodos();
 	}, []);
 
-	// useEffect(() => {
-	// 	const fetchTimer = setInterval(() => {
-	// 		const filter = localStorage.getItem("filter") as keyof TodoInfo;
-	// 		fetchTodos(filter);
-	// 	}, 5000);
-	// 	return () => {
-	// 		clearInterval(fetchTimer);
-	// 	};
-	// }, [todos]);
+	useEffect(() => {
+		const fetchTimer = setInterval(() => {
+			const filter = localStorage.getItem("filter") as keyof TodoInfo;
+			fetchTodos(filter);
+		}, 5000);
+		return () => {
+			clearInterval(fetchTimer);
+		};
+	}, [todos]);
 
 	return (
 		<div className={s.wrapper}>

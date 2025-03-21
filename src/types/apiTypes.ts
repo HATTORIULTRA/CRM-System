@@ -1,12 +1,12 @@
 export interface TodoRequest {
 	title?: string;
-	isDone?: boolean; // изменение статуса задачи происходит через этот флаг
+	isDone?: boolean;
 }
 
 export interface Todo {
 	id: number;
 	title: string;
-	created: string; // ISO date string
+	created: string;
 	isDone: boolean;
 }
 

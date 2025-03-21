@@ -2,8 +2,8 @@ import { FC, ReactNode, useState } from "react";
 import { List, Checkbox, Button, Input, Form } from "antd";
 import { FaPenToSquare, FaTrashCan, FaCheck, FaXmark } from "react-icons/fa6";
 
-import { completeTodo, deleteTodo } from "../../api/api.ts";
-import { Todo, TodoInfo } from "../../types/types.ts";
+import { completeTodo, deleteTodo } from "../../api/todosAPI.ts";
+import { Todo, TodoInfo } from "../../types/apiTypes.ts";
 import s from "./TodoItem.module.scss";
 
 interface TodoItemProps {

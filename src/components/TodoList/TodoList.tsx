@@ -2,7 +2,7 @@ import { FC, ReactNode } from "react";
 import { List } from "antd";
 
 import TodoItem from "../TodoItem/TodoItem.tsx";
-import { Todo } from "../../types/types.ts";
+import { Todo } from "../../types/apiTypes.ts";
 
 interface TodoListProps {
 	todos: Todo[];
@@ -10,8 +10,6 @@ interface TodoListProps {
 }
 
 const TodoList: FC<TodoListProps> = ({ todos, fetchTodos }): ReactNode => {
-	console.log("list rerender");
-
 	return (
 		<List
 			size="large"

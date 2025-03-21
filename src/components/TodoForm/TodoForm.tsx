@@ -1,8 +1,8 @@
 import { FC, ReactNode } from "react";
 import { Button, Form, Input } from "antd";
 
-import { addNewTodo } from "../../api/api.ts";
-import { TodoInfo } from "../../types/types.ts";
+import { addNewTodo } from "../../api/todosAPI.ts";
+import { TodoInfo } from "../../types/apiTypes.ts";
 import s from "./TodoForm.module.scss";
 
 interface TodoFormProps {

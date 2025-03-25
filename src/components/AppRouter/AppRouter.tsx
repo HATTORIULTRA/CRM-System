@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Route, Routes } from "react-router";
 
 import AuthPage from "../../pages/AuthPage/AuthPage.tsx";
@@ -10,7 +10,7 @@ import PublicWrapper from "../PublicWrapper/PublicWrapper.tsx";
 import Register from "../Register/Register.tsx";
 import Login from "../Login/Login.tsx";
 
-const AppRouter: FC = () => {
+const AppRouter: FC = (): ReactNode => {
 	return (
 		<Routes>
 			<Route element={<PublicWrapper />}>

@@ -5,7 +5,6 @@ import skeletPNG from "../../assets/skeletPNG.png";
 import authLogo from "../../assets/authLogo.png";
 import s from "./AuthPage.module.scss";
 
-
 const AuthPage: FC = (): ReactNode => {
 	const location = useLocation();
 	const isLogin = location.pathname === "/auth/login";

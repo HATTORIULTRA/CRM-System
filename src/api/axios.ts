@@ -2,7 +2,7 @@ import axios from "axios";
 import {
 	getTokenFromLocalStorage,
 	removeTokenFromLocalStorage,
-	setAccessTokenToLocalStorage,
+	setTokenToLocalStorage,
 } from "../helpers/localStorage.helper.ts";
 
 export const API_URL = "https://easydev.club/api/v1";
@@ -14,7 +14,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use((config) => {
 	const token = getTokenFromLocalStorage().accessToken;
-	if (token) {
+	if (token && config.url !== "/auth/refresh") {
 		config.headers.Authorization = `Bearer ${token}`;
 	}
 	return config;
@@ -41,12 +41,14 @@ instance.interceptors.response.use(
 					{ refreshToken },
 					{ withCredentials: true }
 				);
-				setAccessTokenToLocalStorage("accessToken", res.data.accessToken);
-				setAccessTokenToLocalStorage("refreshToken", res.data.refreshToken);
+				axios.defaults.headers.common["Authorization"] =
+					"Bearer " + res.data.accessToken;
+
+				setTokenToLocalStorage("accessToken", res.data.accessToken);
+				setTokenToLocalStorage("refreshToken", res.data.refreshToken);
 				return instance.request(originalRequest);
 			} catch (e) {
 				console.log(e);
-				await axios.post(`${API_URL}/user/logout`);
 				removeTokenFromLocalStorage("accessToken");
 				removeTokenFromLocalStorage("refreshToken");
 				window.location.href = "/auth/login";

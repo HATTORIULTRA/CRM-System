@@ -1,4 +1,4 @@
-import { Key, ReactNode, useState } from "react";
+import { FC, Key, ReactNode, useState } from "react";
 import { Link, Outlet } from "react-router";
 import { Layout, Menu, type MenuProps } from "antd";
 import { OrderedListOutlined, UserOutlined } from "@ant-design/icons";
@@ -28,7 +28,7 @@ const items: MenuItem[] = [
 	getItem(<Link to="/profile">My Profile</Link>, "2", <UserOutlined />),
 ];
 
-const MainPage = () => {
+const MainPage: FC = (): ReactNode => {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
 
 	return (

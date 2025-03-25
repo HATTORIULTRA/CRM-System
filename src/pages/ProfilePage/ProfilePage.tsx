@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Button, notification } from "antd";
 
@@ -7,9 +7,9 @@ import { getMe, logoutUser } from "../../store/slices/authSlice.ts";
 import { removeTokenFromLocalStorage } from "../../helpers/localStorage.helper.ts";
 import s from "./ProfilePage.module.scss";
 
-const ProfilePage = () => {
+const ProfilePage: FC = (): ReactNode => {
 	const navigate = useNavigate();
-	const { user } = useAppSelector((state) => state.auth);
+	const { user, isLoading } = useAppSelector((state) => state.auth);
 	const dispatch = useAppDispatch();
 
 	const onLogoutClick = async () => {
@@ -53,6 +53,7 @@ const ProfilePage = () => {
 				style={{ width: 100, height: 40, fontSize: "18px" }}
 				color="danger"
 				variant="solid"
+				loading={isLoading}
 			>
 				Выйти
 			</Button>

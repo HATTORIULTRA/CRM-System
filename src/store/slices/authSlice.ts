@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import instance, { API_URL } from "../../api/axios.ts";
@@ -14,8 +14,7 @@ import {
 import {
 	getTokenFromLocalStorage,
 	removeTokenFromLocalStorage,
-	setAccessTokenToLocalStorage,
-	setRefreshTokenToLocalStorage,
+	setTokenToLocalStorage,
 } from "../../helpers/localStorage.helper.ts";
 
 const initialState: IAuthState = {
@@ -80,11 +79,9 @@ export const checkAuth = createAsyncThunk(
 		try {
 			const refreshToken: string | null =
 				getTokenFromLocalStorage().refreshToken;
-			const res = await axios.post(
-				`${API_URL}/auth/refresh`,
-				{ refreshToken },
-				{ withCredentials: true }
-			);
+			const res = await instance.post(`${API_URL}/auth/refresh`, {
+				refreshToken,
+			});
 			return res.data;
 		} catch (err) {
 			const error: AxiosError<KnownError> = err as any;
@@ -160,11 +157,8 @@ export const authSlice = createSlice({
 				state.status = action.payload.status;
 				state.isLoading = false;
 				state.token = action.payload.data.accessToken;
-				setAccessTokenToLocalStorage(
-					"accessToken",
-					action.payload.data.accessToken
-				);
-				setRefreshTokenToLocalStorage(
+				setTokenToLocalStorage("accessToken", action.payload.data.accessToken);
+				setTokenToLocalStorage(
 					"refreshToken",
 					action.payload.data.refreshToken
 				);
@@ -183,18 +177,14 @@ export const authSlice = createSlice({
 				state.token = action.payload.accessToken;
 				state.status = action.payload.status;
 
-				setAccessTokenToLocalStorage("accessToken", action.payload.accessToken);
-				setRefreshTokenToLocalStorage(
-					"refreshToken",
-					action.payload.refreshToken
-				);
+				setTokenToLocalStorage("accessToken", action.payload.accessToken);
+				setTokenToLocalStorage("refreshToken", action.payload.refreshToken);
 			})
 			.addCase(checkAuth.rejected, (state) => {
 				state.isLoading = false;
 				state.user = null;
 				removeTokenFromLocalStorage("accessToken");
 				removeTokenFromLocalStorage("refreshToken");
-				logoutUser();
 			})
 
 			// GET ME

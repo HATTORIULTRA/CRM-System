@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { FormProps, Button, Form, Input } from "antd";
 
@@ -10,11 +10,12 @@ import {
 import { loginUser } from "../../store/slices/authSlice.ts";
 import { AuthData } from "../../types/IAuth.ts";
 
-const Login = () => {
+const Login: FC = (): ReactNode => {
 	const [form] = Form.useForm();
 	const dispatch = useAppDispatch();
 	const isAuth = useAppSelector((state) => state.auth.token);
 	const status = useAppSelector((state) => state.auth.status);
+	const isLoading = useAppSelector((state) => state.auth.isLoading);
 	const navigate = useNavigate();
 
 	const onFinish: FormProps<AuthData>["onFinish"] = (values) => {
@@ -104,6 +105,7 @@ const Login = () => {
 						}}
 						type="primary"
 						htmlType="submit"
+						loading={isLoading}
 					>
 						Login
 					</Button>

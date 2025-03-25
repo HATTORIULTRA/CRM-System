@@ -5,17 +5,8 @@ export function getTokenFromLocalStorage() {
 	};
 }
 
-export function setAccessTokenToLocalStorage(key: string, token: string): void {
-	const jsonToken = token;
-	window.localStorage.setItem(key, jsonToken);
-}
-
-export function setRefreshTokenToLocalStorage(
-	key: string,
-	token: string
-): void {
-	const jsonToken = token;
-	window.localStorage.setItem(key, jsonToken);
+export function setTokenToLocalStorage(key: string, token: string): void {
+	window.localStorage.setItem(key, token);
 }
 
 export function removeTokenFromLocalStorage(key: string): void {

@@ -15,10 +15,9 @@ import {
 const Register: FC = (): ReactNode => {
 	const [form] = Form.useForm();
 	const dispatch = useAppDispatch();
-	const { status } = useAppSelector((state) => state.auth);
+	const { status, isLoading } = useAppSelector((state) => state.auth);
 
 	const onFinish: FormProps<UserRegistration>["onFinish"] = (values) => {
-		console.log("Received values of form: ", values);
 		try {
 			dispatch(registerUser(values));
 		} catch (error) {
@@ -209,6 +208,7 @@ const Register: FC = (): ReactNode => {
 								}}
 								type="primary"
 								htmlType="submit"
+								loading={isLoading}
 							>
 								Register
 							</Button>

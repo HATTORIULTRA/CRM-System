@@ -1,11 +1,12 @@
 import { FC, ReactNode, useEffect } from "react";
 import { Navigate, Outlet } from "react-router";
-import { getTokenFromLocalStorage } from "../../helpers/localStorage.helper.ts";
+import TokenHelper from "../../helpers/localStorage.helper.ts";
 import { useAppDispatch } from "../../hooks/redux.ts";
 import { checkAuth } from "../../store/slices/authSlice.ts";
 
 const PrivateWrapper: FC = (): ReactNode => {
-	const accessToken = getTokenFromLocalStorage().accessToken;
+	const tokenHelper = new TokenHelper();
+	const accessToken = tokenHelper.getTokenFromLocalStorage().accessToken;
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {

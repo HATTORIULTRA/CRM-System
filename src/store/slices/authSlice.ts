@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import instance, { API_URL } from "../../api/axios.ts";
 import {
@@ -11,16 +11,15 @@ import {
 	Token,
 	UserRegistration,
 } from "../../types/IAuth.ts";
-import {
-	getTokenFromLocalStorage,
-	removeTokenFromLocalStorage,
-	setTokenToLocalStorage,
-} from "../../helpers/localStorage.helper.ts";
+import TokenHelper from "../../helpers/localStorage.helper.ts";
+
+const tokenHelper = new TokenHelper();
 
 const initialState: IAuthState = {
 	user: null,
 	isLoading: false,
 	token: null,
+	isAuth: false,
 	status: null,
 };
 
@@ -35,14 +34,13 @@ export const registerUser = createAsyncThunk<
 		{ rejectWithValue }
 	) => {
 		try {
-			const res = await instance.post("/auth/signup", {
+			return await instance.post("/auth/signup", {
 				email,
 				login,
 				password,
 				phoneNumber,
 				username,
 			});
-			return res;
 		} catch (err) {
 			const error: AxiosError<KnownError> = err as any;
 			console.log(error.response);
@@ -57,12 +55,10 @@ export const loginUser = createAsyncThunk<
 	{ rejectValue: AxiosResponse<KnownError> }
 >("auth/loginUser", async ({ login, password }, { rejectWithValue }) => {
 	try {
-		const res = await instance.post("/auth/signin", {
+		return await instance.post("/auth/signin", {
 			login,
 			password,
 		});
-
-		return res;
 	} catch (err) {
 		const error: AxiosError<KnownError> = err as any;
 		if (!error.response) {
@@ -78,7 +74,7 @@ export const checkAuth = createAsyncThunk(
 	async (_, { rejectWithValue }) => {
 		try {
 			const refreshToken: string | null =
-				getTokenFromLocalStorage().refreshToken;
+				tokenHelper.getTokenFromLocalStorage().refreshToken;
 			const res = await instance.post(`${API_URL}/auth/refresh`, {
 				refreshToken,
 			});
@@ -132,7 +128,11 @@ export const logoutUser = createAsyncThunk<
 export const authSlice = createSlice({
 	name: "auth",
 	initialState,
-	reducers: {},
+	reducers: {
+		resetStatus(state) {
+			state.status = null;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			// REGISTER USER
@@ -157,8 +157,12 @@ export const authSlice = createSlice({
 				state.status = action.payload.status;
 				state.isLoading = false;
 				state.token = action.payload.data.accessToken;
-				setTokenToLocalStorage("accessToken", action.payload.data.accessToken);
-				setTokenToLocalStorage(
+				state.isAuth = true;
+				tokenHelper.setTokenToLocalStorage(
+					"accessToken",
+					action.payload.data.accessToken
+				);
+				tokenHelper.setTokenToLocalStorage(
 					"refreshToken",
 					action.payload.data.refreshToken
 				);
@@ -176,15 +180,23 @@ export const authSlice = createSlice({
 				state.isLoading = false;
 				state.token = action.payload.accessToken;
 				state.status = action.payload.status;
+				state.isAuth = true;
 
-				setTokenToLocalStorage("accessToken", action.payload.accessToken);
-				setTokenToLocalStorage("refreshToken", action.payload.refreshToken);
+				tokenHelper.setTokenToLocalStorage(
+					"accessToken",
+					action.payload.accessToken
+				);
+				tokenHelper.setTokenToLocalStorage(
+					"refreshToken",
+					action.payload.refreshToken
+				);
 			})
 			.addCase(checkAuth.rejected, (state) => {
 				state.isLoading = false;
 				state.user = null;
-				removeTokenFromLocalStorage("accessToken");
-				removeTokenFromLocalStorage("refreshToken");
+				state.isAuth = false;
+				tokenHelper.removeTokenFromLocalStorage("accessToken");
+				tokenHelper.removeTokenFromLocalStorage("refreshToken");
 			})
 
 			// GET ME
@@ -204,14 +216,17 @@ export const authSlice = createSlice({
 				state.isLoading = true;
 			})
 			.addCase(logoutUser.fulfilled, (state) => {
+				state.isAuth = false;
 				state.user = null;
 				state.isLoading = false;
 				state.token = null;
 				state.status = null;
-				removeTokenFromLocalStorage("accessToken");
-				removeTokenFromLocalStorage("refreshToken");
+				tokenHelper.removeTokenFromLocalStorage("accessToken");
+				tokenHelper.removeTokenFromLocalStorage("refreshToken");
 			});
 	},
 });
+
+export const { resetStatus } = authSlice.actions;
 
 export default authSlice.reducer;

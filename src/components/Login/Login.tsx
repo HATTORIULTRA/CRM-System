@@ -7,13 +7,13 @@ import {
 	resLoginErrorNotification,
 	successLoginNotification,
 } from "../../helpers/notification.helper.ts";
-import { loginUser } from "../../store/slices/authSlice.ts";
+import { loginUser, resetStatus } from "../../store/slices/authSlice.ts";
 import { AuthData } from "../../types/IAuth.ts";
 
 const Login: FC = (): ReactNode => {
 	const [form] = Form.useForm();
 	const dispatch = useAppDispatch();
-	const isAuth = useAppSelector((state) => state.auth.token);
+	const isAuth = useAppSelector((state) => state.auth.isAuth);
 	const status = useAppSelector((state) => state.auth.status);
 	const isLoading = useAppSelector((state) => state.auth.isLoading);
 	const navigate = useNavigate();
@@ -27,7 +27,7 @@ const Login: FC = (): ReactNode => {
 	};
 
 	useEffect(() => {
-		if (isAuth !== null) {
+		if (isAuth) {
 			successLoginNotification();
 			navigate("/");
 		}
@@ -36,6 +36,7 @@ const Login: FC = (): ReactNode => {
 	useEffect(() => {
 		if (status === 401) {
 			resLoginErrorNotification();
+			dispatch(resetStatus());
 		}
 	}, [status]);
 

@@ -4,10 +4,11 @@ import { Button, notification } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { getMe, logoutUser } from "../../store/slices/authSlice.ts";
-import { removeTokenFromLocalStorage } from "../../helpers/localStorage.helper.ts";
+import TokenHelper from "../../helpers/localStorage.helper.ts";
 import s from "./ProfilePage.module.scss";
 
 const ProfilePage: FC = (): ReactNode => {
+	const tokenHelper = new TokenHelper();
 	const navigate = useNavigate();
 	const { user, isLoading } = useAppSelector((state) => state.auth);
 	const dispatch = useAppDispatch();
@@ -16,8 +17,8 @@ const ProfilePage: FC = (): ReactNode => {
 		await dispatch(logoutUser());
 		navigate("/auth/login");
 		showNotification();
-		removeTokenFromLocalStorage("accessToken");
-		removeTokenFromLocalStorage("refreshToken");
+		tokenHelper.removeTokenFromLocalStorage("accessToken");
+		tokenHelper.removeTokenFromLocalStorage("refreshToken");
 	};
 
 	const showNotification = () => {

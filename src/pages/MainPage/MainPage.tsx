@@ -1,9 +1,11 @@
-import { FC, Key, ReactNode, useState } from "react";
+import { FC, Key, ReactNode, useLayoutEffect, useState } from "react";
 import { Link, Outlet } from "react-router";
 import { Layout, Menu, type MenuProps } from "antd";
-import { OrderedListOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined, FormOutlined } from "@ant-design/icons";
 
 import logotype from "../../assets/logoImg.png";
+import { useAppDispatch } from "../../hooks/redux.ts";
+import { getMe } from "../../store/slices/authSlice.ts";
 
 const { Content, Sider } = Layout;
 
@@ -23,13 +25,18 @@ function getItem(
 	} as MenuItem;
 }
 
-const items: MenuItem[] = [
-	getItem(<Link to="/">Todos</Link>, "1", <OrderedListOutlined />),
-	getItem(<Link to="/profile">My Profile</Link>, "2", <UserOutlined />),
-];
-
 const MainPage: FC = (): ReactNode => {
 	const [collapsed, setCollapsed] = useState<boolean>(false);
+	const dispatch = useAppDispatch();
+
+	useLayoutEffect(() => {
+		dispatch(getMe());
+	}, []);
+
+	const items: MenuItem[] = [
+		getItem(<Link to="/">Todos</Link>, "1", <FormOutlined />),
+		getItem(<Link to="/profile">My Profile</Link>, "2", <UserOutlined />),
+	];
 
 	return (
 		<Layout style={{ minHeight: "100vh" }}>

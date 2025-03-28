@@ -1,9 +1,7 @@
 import axios from "axios";
-import {
-	getTokenFromLocalStorage,
-	removeTokenFromLocalStorage,
-	setTokenToLocalStorage,
-} from "../helpers/localStorage.helper.ts";
+import TokenHelper from "../helpers/localStorage.helper.ts";
+
+const tokenHelper = new TokenHelper();
 
 export const API_URL = "https://easydev.club/api/v1";
 
@@ -13,7 +11,7 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use((config) => {
-	const token = getTokenFromLocalStorage().accessToken;
+	const token = tokenHelper.getTokenFromLocalStorage().accessToken;
 	if (token && config.url !== "/auth/refresh") {
 		config.headers.Authorization = `Bearer ${token}`;
 	}
@@ -30,12 +28,13 @@ instance.interceptors.response.use(
 		if (
 			error.response.status == 401 &&
 			error.config &&
-			!error.config._isRetry
+			!error.config._isRetry &&
+			originalRequest.url !== "/auth/signin"
 		) {
 			originalRequest._isRetry = true;
 			try {
 				const refreshToken: string | null =
-					getTokenFromLocalStorage().refreshToken;
+					tokenHelper.getTokenFromLocalStorage().refreshToken;
 				const res = await axios.post(
 					`${API_URL}/auth/refresh`,
 					{ refreshToken },
@@ -44,13 +43,16 @@ instance.interceptors.response.use(
 				axios.defaults.headers.common["Authorization"] =
 					"Bearer " + res.data.accessToken;
 
-				setTokenToLocalStorage("accessToken", res.data.accessToken);
-				setTokenToLocalStorage("refreshToken", res.data.refreshToken);
+				tokenHelper.setTokenToLocalStorage("accessToken", res.data.accessToken);
+				tokenHelper.setTokenToLocalStorage(
+					"refreshToken",
+					res.data.refreshToken
+				);
 				return instance.request(originalRequest);
 			} catch (e) {
 				console.log(e);
-				removeTokenFromLocalStorage("accessToken");
-				removeTokenFromLocalStorage("refreshToken");
+				tokenHelper.removeTokenFromLocalStorage("accessToken");
+				tokenHelper.removeTokenFromLocalStorage("refreshToken");
 				window.location.href = "/auth/login";
 			}
 		}

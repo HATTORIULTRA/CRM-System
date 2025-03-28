@@ -9,6 +9,7 @@ import PrivateWrapper from "../PrivateWrapper/PrivateWrapper.tsx";
 import PublicWrapper from "../PublicWrapper/PublicWrapper.tsx";
 import Register from "../Register/Register.tsx";
 import Login from "../Login/Login.tsx";
+import ErrorPage from "../../pages/ErrorPage/ErrorPage.tsx";
 
 const AppRouter: FC = (): ReactNode => {
 	return (
@@ -26,6 +27,7 @@ const AppRouter: FC = (): ReactNode => {
 					<Route index element={<TodoPage />} />
 					<Route path="todo" element={<TodoPage />} />
 					<Route path="profile" element={<ProfilePage />} />
+					<Route path="*" element={<ErrorPage />} />
 				</Route>
 			</Route>
 		</Routes>

@@ -12,26 +12,26 @@ import Login from "../Login/Login.tsx";
 import ErrorPage from "../../pages/ErrorPage/ErrorPage.tsx";
 
 const AppRouter: FC = (): ReactNode => {
-	return (
-		<Routes>
-			<Route element={<PublicWrapper />}>
-				<Route path="/auth/*" element={<AuthPage />}>
-					<Route index element={<Login />} />
-					<Route path="login" element={<Login />} />
-					<Route path="register" element={<Register />} />
-				</Route>
-			</Route>
+  return (
+    <Routes>
+      <Route element={<PublicWrapper />}>
+        <Route path="/auth/*" element={<AuthPage />}>
+          <Route index element={<Login />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+      </Route>
 
-			<Route element={<PrivateWrapper />}>
-				<Route path="/*" element={<MainPage />}>
-					<Route index element={<TodoPage />} />
-					<Route path="todo" element={<TodoPage />} />
-					<Route path="profile" element={<ProfilePage />} />
-					<Route path="*" element={<ErrorPage />} />
-				</Route>
-			</Route>
-		</Routes>
-	);
+      <Route element={<PrivateWrapper />}>
+        <Route path="/*" element={<MainPage />}>
+          <Route index element={<TodoPage />} />
+          <Route path="todo" element={<TodoPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="*" element={<ErrorPage />} />
+        </Route>
+      </Route>
+    </Routes>
+  );
 };
 
 export default AppRouter;

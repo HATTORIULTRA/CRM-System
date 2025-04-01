@@ -1,49 +1,49 @@
 .wrapper {
-	margin: 0;
-	padding: 0;
-	background-color: #ffffff;
-	height: 100vh;
-	overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  height: 100vh;
+  overflow: hidden;
 
-	display: flex;
-	.left {
-		.image {
-			width: 100%;
-			height: 100%;
-		}
-	}
-	.right {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
+  display: flex;
+  .left {
+    .image {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .right {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
-		text-align: left;
-		margin: 0 auto;
-		.authLogo {
-			top: 5%;
-			left: 0;
-			max-width: 72px;
-			margin-bottom: 36px;
-		}
-		.top {
-			display: flex;
-			flex-direction: column;
-			justify-content: start;
+    text-align: left;
+    margin: 0 auto;
+    .authLogo {
+      top: 5%;
+      left: 0;
+      max-width: 72px;
+      margin-bottom: 36px;
+    }
+    .top {
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
 
-			.title {
-				color: #525252;
-				font-size: 36px;
-				font-weight: bold;
-				margin: 0 auto;
-			}
-			.descr {
-				color: #525252;
-				font-size: 16px;
-				text-align: start;
-				margin-left: 28px;
-				margin-bottom: 36px;
-			}
-		}
-	}
+      .title {
+        color: #525252;
+        font-size: 36px;
+        font-weight: bold;
+        margin: 0 auto;
+      }
+      .descr {
+        color: #525252;
+        font-size: 16px;
+        text-align: start;
+        margin-left: 28px;
+        margin-bottom: 36px;
+      }
+    }
+  }
 }

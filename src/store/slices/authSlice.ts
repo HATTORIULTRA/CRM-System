@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { notification } from "antd";
 
 import instance, { API_URL } from "../../api/axios.ts";
 import {
@@ -11,14 +12,13 @@ import {
   Token,
   UserRegistration,
 } from "../../types/IAuth.ts";
-import TokenHelper from "../../helpers/localStorage.helper.ts";
+import TokenHelper from "../../helpers/token.helper.ts";
 
 const tokenHelper = new TokenHelper();
 
 const initialState: IAuthState = {
   user: null,
   isLoading: false,
-  token: null,
   isAuth: false,
   status: null,
 };
@@ -34,16 +34,48 @@ export const registerUser = createAsyncThunk<
     { rejectWithValue }
   ) => {
     try {
-      return await instance.post("/auth/signup", {
+      const res = await instance.post("/auth/signup", {
         email,
         login,
         password,
         phoneNumber,
         username,
       });
-    } catch (err) {
-      const error: AxiosError<KnownError> = err as any;
-      console.log(error.response);
+
+      notification.config({ maxCount: 3 });
+      notification.success({
+        message: "Успех",
+        description: "Вы успешно зарегистрировались.",
+        placement: "bottomRight",
+        duration: 4,
+      });
+
+      return res;
+    } catch (err: any) {
+      const error: AxiosError<KnownError> = err;
+      if (!error.response) {
+        throw err;
+      }
+
+      if (error.response.status === 500) {
+        notification.config({ maxCount: 3 });
+        notification.error({
+          message: "Упс",
+          description: "Ошибка сервера, повторите попытку.",
+          placement: "bottomRight",
+          duration: 4,
+        });
+      } else if (error.response.status === 409) {
+        notification.config({ maxCount: 3 });
+        notification.error({
+          message: "Ошибка",
+          description: "Такой пользователь уже существует!",
+          placement: "bottomRight",
+          duration: 4,
+        });
+      }
+
+      console.log(rejectWithValue(error.response));
       return rejectWithValue(error.response);
     }
   }
@@ -55,15 +87,36 @@ export const loginUser = createAsyncThunk<
   { rejectValue: AxiosResponse<KnownError> }
 >("auth/loginUser", async ({ login, password }, { rejectWithValue }) => {
   try {
-    return await instance.post("/auth/signin", {
+    const res = await instance.post("/auth/signin", {
       login,
       password,
     });
-  } catch (err) {
-    const error: AxiosError<KnownError> = err as any;
+
+    notification.config({ maxCount: 3 });
+    notification.success({
+      message: "Успех",
+      description: "Вы авторизовались!",
+      placement: "bottomRight",
+      duration: 3,
+    });
+
+    return res;
+  } catch (err: any) {
+    const error: AxiosError<KnownError> = err;
     if (!error.response) {
       throw err;
     }
+
+    if (error.response.status === 401) {
+      notification.config({ maxCount: 3 });
+      notification.error({
+        message: "Ошибка",
+        description: "Неверные данные пользователя.",
+        placement: "bottomRight",
+        duration: 4,
+      });
+    }
+
     console.log(rejectWithValue(error.response));
     return rejectWithValue(error.response);
   }
@@ -74,13 +127,13 @@ export const checkAuth = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const refreshToken: string | null =
-        tokenHelper.getTokenFromLocalStorage().refreshToken;
+        tokenHelper.tokenFromHelper.refreshToken;
       const res = await instance.post(`${API_URL}/auth/refresh`, {
         refreshToken,
       });
       return res.data;
-    } catch (err) {
-      const error: AxiosError<KnownError> = err as any;
+    } catch (err: any) {
+      const error: AxiosError<KnownError> = err;
       if (!error.response) {
         throw err;
       }
@@ -96,8 +149,8 @@ export const getMe = createAsyncThunk<Profile>(
     try {
       const res = await instance.get("/user/profile");
       return res.data;
-    } catch (err) {
-      const error: AxiosError<KnownError> = err as any;
+    } catch (err: any) {
+      const error: AxiosError<KnownError> = err;
       if (!error.response) {
         throw err;
       }
@@ -115,8 +168,8 @@ export const logoutUser = createAsyncThunk<
   try {
     const res = await instance.post("/user/logout");
     return res.data;
-  } catch (err) {
-    const error: AxiosError<KnownError> = err as any;
+  } catch (err: any) {
+    const error: AxiosError<KnownError> = err;
     if (!error.response) {
       throw err;
     }
@@ -128,11 +181,7 @@ export const logoutUser = createAsyncThunk<
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    resetStatus(state) {
-      state.status = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // REGISTER USER
@@ -146,7 +195,6 @@ export const authSlice = createSlice({
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.status = action.payload!.status;
-        console.log(action.payload);
       })
 
       // LOGIN USER
@@ -156,16 +204,10 @@ export const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = action.payload.status;
         state.isLoading = false;
-        state.token = action.payload.data.accessToken;
         state.isAuth = true;
-        tokenHelper.setTokenToLocalStorage(
-          "accessToken",
-          action.payload.data.accessToken
-        );
-        tokenHelper.setTokenToLocalStorage(
-          "refreshToken",
-          action.payload.data.refreshToken
-        );
+        tokenHelper.setAccessToken = action.payload.data.accessToken;
+        tokenHelper.setRefreshTokenToLocalStorage =
+          action.payload.data.refreshToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -178,25 +220,16 @@ export const authSlice = createSlice({
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.token = action.payload.accessToken;
         state.status = action.payload.status;
         state.isAuth = true;
-
-        tokenHelper.setTokenToLocalStorage(
-          "accessToken",
-          action.payload.accessToken
-        );
-        tokenHelper.setTokenToLocalStorage(
-          "refreshToken",
-          action.payload.refreshToken
-        );
+        tokenHelper.setAccessToken = action.payload.accessToken;
+        tokenHelper.setRefreshTokenToLocalStorage = action.payload.refreshToken;
       })
       .addCase(checkAuth.rejected, (state) => {
         state.isLoading = false;
         state.user = null;
         state.isAuth = false;
-        tokenHelper.removeTokenFromLocalStorage("accessToken");
-        tokenHelper.removeTokenFromLocalStorage("refreshToken");
+        tokenHelper.removeRefreshTokenFromLS();
       })
 
       // GET ME
@@ -208,7 +241,7 @@ export const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(getMe.rejected, (state) => {
-        state.token = null;
+        state.isLoading = false;
       })
 
       //LOGOUT
@@ -219,14 +252,11 @@ export const authSlice = createSlice({
         state.isAuth = false;
         state.user = null;
         state.isLoading = false;
-        state.token = null;
         state.status = null;
-        tokenHelper.removeTokenFromLocalStorage("accessToken");
-        tokenHelper.removeTokenFromLocalStorage("refreshToken");
+        tokenHelper.setAccessToken = null;
+        tokenHelper.removeRefreshTokenFromLS();
       });
   },
 });
-
-export const { resetStatus } = authSlice.actions;
 
 export default authSlice.reducer;

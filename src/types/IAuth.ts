@@ -59,7 +59,6 @@ export interface AxiosResponse<T = any> {
 export interface IAuthState {
   user: Profile | null;
   isLoading: boolean;
-  token: string | null;
   isAuth: boolean;
   status: number | null;
 }

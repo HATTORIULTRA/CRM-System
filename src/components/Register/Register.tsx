@@ -1,16 +1,10 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode } from "react";
 import { Link } from "react-router";
 import { Button, Form, FormProps, Input } from "antd";
 
 import { registerUser } from "../../store/slices/authSlice.ts";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { UserRegistration } from "../../types/IAuth.ts";
-import {
-  registerSuccessNotification,
-  resErrorNotification,
-  userExistNotification,
-  wrongReqNotification,
-} from "../../helpers/notification.helper.ts";
 
 const Register: FC = (): ReactNode => {
   const [form] = Form.useForm();
@@ -24,21 +18,6 @@ const Register: FC = (): ReactNode => {
       console.log("Register finish form error", error);
     }
   };
-
-  useEffect(() => {
-    if (status === 409) {
-      userExistNotification();
-    }
-    if (status === 404) {
-      wrongReqNotification();
-    }
-    if (status === 500) {
-      resErrorNotification();
-    }
-    if (status === 200) {
-      registerSuccessNotification();
-    }
-  }, [status]);
 
   return (
     <>
@@ -214,9 +193,6 @@ const Register: FC = (): ReactNode => {
               </Button>
             </Form.Item>
           </Form>
-          <h2>
-            Уже есть аккаунт? <Link to="/auth/login">Войти</Link>
-          </h2>
         </>
       )}
     </>

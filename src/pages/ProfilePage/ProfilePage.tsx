@@ -1,33 +1,22 @@
 import { FC, ReactNode, useEffect } from "react";
-import { useNavigate } from "react-router";
 import { Button, notification } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { getMe, logoutUser } from "../../store/slices/authSlice.ts";
-import TokenHelper from "../../helpers/localStorage.helper.ts";
 import s from "./ProfilePage.module.scss";
 
 const ProfilePage: FC = (): ReactNode => {
-  const tokenHelper = new TokenHelper();
-  const navigate = useNavigate();
   const { user, isLoading } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   const onLogoutClick = async () => {
     await dispatch(logoutUser());
-    navigate("/auth/login");
-    showNotification();
-    tokenHelper.removeTokenFromLocalStorage("accessToken");
-    tokenHelper.removeTokenFromLocalStorage("refreshToken");
-  };
-
-  const showNotification = () => {
-    notification.config({ maxCount: 1 });
+    notification.config({ maxCount: 3 });
     notification.success({
       message: "Выход",
       description: "Вы вышли из аккаунта.",
       placement: "bottomRight",
-      duration: 3,
+      duration: 4,
     });
   };
 
@@ -41,7 +30,9 @@ const ProfilePage: FC = (): ReactNode => {
         <h2>Profile</h2>
         <h2>Имя: {user?.username}</h2>
         <h3>Почта: {user?.email}</h3>
-        <h3>Роли: {user?.roles[0]}</h3>
+        <div style={{ display: "flex", gap: "10px" }}>
+          Роли: {user?.roles.map((item) => <h3 key={item}>{item}</h3>)}
+        </div>
         <h3>
           Телефон:{" "}
           {user?.phoneNumber.length === 0

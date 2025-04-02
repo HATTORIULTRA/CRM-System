@@ -1,5 +1,5 @@
 import { FC, ReactNode } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation } from "react-router";
 
 import skeletPNG from "../../assets/skeletPNG.png";
 import authLogo from "../../assets/authLogo.png";
@@ -23,6 +23,18 @@ const AuthPage: FC = (): ReactNode => {
           <p className={s.descr}>See what is going on with your business</p>
         </div>
         <Outlet />
+        <div>
+          {isLogin ? (
+            <h2>
+              Нет аккаунта? <Link to="/auth/register">Зарегистрироваться</Link>
+            </h2>
+          ) : (
+            <h2>
+              {" "}
+              Уже есть аккаунт? <Link to="/auth/login">Войти</Link>
+            </h2>
+          )}
+        </div>
       </div>
     </div>
   );

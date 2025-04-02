@@ -1,15 +1,15 @@
 import { FC, ReactNode } from "react";
 import { Route, Routes } from "react-router";
 
-import AuthPage from "../../pages/AuthPage/AuthPage.tsx";
-import MainPage from "../../pages/MainPage/MainPage.tsx";
-import TodoPage from "../../pages/TodoPage/TodoPage.tsx";
-import ProfilePage from "../../pages/ProfilePage/ProfilePage.tsx";
-import PrivateWrapper from "../PrivateWrapper/PrivateWrapper.tsx";
-import PublicWrapper from "../PublicWrapper/PublicWrapper.tsx";
-import Register from "../Register/Register.tsx";
-import Login from "../Login/Login.tsx";
-import ErrorPage from "../../pages/ErrorPage/ErrorPage.tsx";
+import AuthPage from "../pages/AuthPage/AuthPage.tsx";
+import MainPage from "../pages/MainPage/MainPage.tsx";
+import TodoPage from "../pages/TodoPage/TodoPage.tsx";
+import ProfilePage from "../pages/ProfilePage/ProfilePage.tsx";
+import PrivateWrapper from "../components/PrivateWrapper/PrivateWrapper.tsx";
+import PublicWrapper from "../components/PublicWrapper/PublicWrapper.tsx";
+import Register from "../components/Register/Register.tsx";
+import Login from "../components/Login/Login.tsx";
+import ErrorPage from "../pages/ErrorPage/ErrorPage.tsx";
 
 const AppRouter: FC = (): ReactNode => {
   return (

@@ -1,22 +1,14 @@
-import { FC, ReactNode, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { FC, ReactNode } from "react";
 import { FormProps, Button, Form, Input } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
-import {
-  resLoginErrorNotification,
-  successLoginNotification,
-} from "../../helpers/notification.helper.ts";
-import { loginUser, resetStatus } from "../../store/slices/authSlice.ts";
+import { loginUser } from "../../store/slices/authSlice.ts";
 import { AuthData } from "../../types/IAuth.ts";
 
 const Login: FC = (): ReactNode => {
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
-  const isAuth = useAppSelector((state) => state.auth.isAuth);
-  const status = useAppSelector((state) => state.auth.status);
   const isLoading = useAppSelector((state) => state.auth.isLoading);
-  const navigate = useNavigate();
 
   const onFinish: FormProps<AuthData>["onFinish"] = (values) => {
     try {
@@ -25,20 +17,6 @@ const Login: FC = (): ReactNode => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (isAuth) {
-      successLoginNotification();
-      navigate("/");
-    }
-  }, [isAuth]);
-
-  useEffect(() => {
-    if (status === 401) {
-      resLoginErrorNotification();
-      dispatch(resetStatus());
-    }
-  }, [status]);
 
   return (
     <>
@@ -112,9 +90,6 @@ const Login: FC = (): ReactNode => {
           </Button>
         </Form.Item>
       </Form>
-      <h2>
-        Нет аккаунта? <Link to="/auth/register">Зарегистрироваться</Link>
-      </h2>
     </>
   );
 };

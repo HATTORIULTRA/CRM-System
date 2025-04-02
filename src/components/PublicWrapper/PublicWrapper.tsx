@@ -1,12 +1,10 @@
 import { FC, ReactNode } from "react";
 import { Navigate, Outlet } from "react-router";
-import TokenHelper from "../../helpers/localStorage.helper.ts";
+import { useAppSelector } from "../../hooks/redux.ts";
 
 const PublicWrapper: FC = (): ReactNode => {
-  const tokenHelper = new TokenHelper();
-  const accessToken = tokenHelper.getTokenFromLocalStorage().accessToken;
-
-  return accessToken ? <Navigate to="/" /> : <Outlet />;
+  const { isAuth } = useAppSelector((state) => state.auth);
+  return isAuth ? <Navigate to="/" /> : <Outlet />;
 };
 
 export default PublicWrapper;

@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import { BrowserRouter } from "react-router";
 
-import AppRouter from "./components/AppRouter/AppRouter.tsx";
+import AppRouter from "./router/AppRouter.tsx";
 
 const App: FC = (): ReactNode => {
   return (

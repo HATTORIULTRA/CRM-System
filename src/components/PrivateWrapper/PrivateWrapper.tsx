@@ -1,21 +1,19 @@
 import { FC, ReactNode, useEffect } from "react";
 import { Navigate, Outlet } from "react-router";
-import TokenHelper from "../../helpers/localStorage.helper.ts";
-import { useAppDispatch } from "../../hooks/redux.ts";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { checkAuth } from "../../store/slices/authSlice.ts";
 
 const PrivateWrapper: FC = (): ReactNode => {
-  const tokenHelper = new TokenHelper();
-  const accessToken = tokenHelper.getTokenFromLocalStorage().accessToken;
+  const { isAuth } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!isAuth) {
       dispatch(checkAuth());
     }
   }, []);
 
-  return accessToken ? <Outlet /> : <Navigate to="/auth/login" />;
+  return isAuth ? <Outlet /> : <Navigate to="/auth/login" />;
 };
 
 export default PrivateWrapper;

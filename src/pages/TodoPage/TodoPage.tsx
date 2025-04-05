@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { Todo, TodoInfo } from "../../types/apiTypes.ts";
 import { requestFilteredTodos } from "../../api/todosAPI.ts";
 
@@ -17,19 +17,18 @@ const TodoPage: FC = (): ReactNode => {
     inWork: 0,
   });
 
-  const fetchTodos = useMemo(
-    () =>
-      async (filter: keyof TodoInfo = "all") => {
-        try {
-          const res = await requestFilteredTodos(filter);
-          setTodos(res.data);
-          setCategoryCount(res.info!);
-        } catch (error) {
-          console.error("Fetching todos error", error);
-        } finally {
-          setIsLoading(false);
-        }
-      },
+  const fetchTodos = useCallback(
+    async (filter: keyof TodoInfo = "all") => {
+      try {
+        const res = await requestFilteredTodos(filter);
+        setTodos(res.data);
+        setCategoryCount(res.info!);
+      } catch (error) {
+        console.error("Fetching todos error", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
     [todos]
   );
 

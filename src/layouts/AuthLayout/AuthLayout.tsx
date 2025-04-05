@@ -3,9 +3,9 @@ import { Link, Outlet, useLocation } from "react-router";
 
 import skeletPNG from "../../assets/skeletPNG.png";
 import authLogo from "../../assets/authLogo.png";
-import s from "./AuthPage.module.scss";
+import s from "./AuthLayout.module.scss";
 
-const AuthPage: FC = (): ReactNode => {
+const AuthLayout: FC = (): ReactNode => {
   const location = useLocation();
   const isLogin = location.pathname === "/auth/login";
 
@@ -30,7 +30,6 @@ const AuthPage: FC = (): ReactNode => {
             </h2>
           ) : (
             <h2>
-              {" "}
               Уже есть аккаунт? <Link to="/auth/login">Войти</Link>
             </h2>
           )}
@@ -40,4 +39,4 @@ const AuthPage: FC = (): ReactNode => {
   );
 };
 
-export default AuthPage;
+export default AuthLayout;

@@ -1,4 +1,4 @@
-export default class TokenHelper {
+class TokenHelper {
   #accessToken: string | null = null;
 
   set setAccessToken(token: string | null) {
@@ -20,3 +20,6 @@ export default class TokenHelper {
     window.localStorage.removeItem("refreshToken");
   }
 }
+
+const tokenHelper = new TokenHelper();
+export default tokenHelper;

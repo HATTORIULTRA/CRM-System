@@ -1,5 +1,5 @@
-import { FC, Key, ReactNode, useState } from "react";
-import { Link, Outlet } from "react-router";
+import { FC, Key, ReactNode, useMemo, useState } from "react";
+import { Link, Outlet, useLocation } from "react-router";
 import { Layout, Menu, type MenuProps } from "antd";
 import { UserOutlined, FormOutlined } from "@ant-design/icons";
 
@@ -23,8 +23,21 @@ function getItem(
   } as MenuItem;
 }
 
-const MainPage: FC = (): ReactNode => {
+const MainLayout: FC = (): ReactNode => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  const location = useLocation();
+
+  const indexOfPages = [
+    { path: "/", index: "1" },
+    { path: "/profile", index: "2" },
+  ];
+
+  const selectedPage = useMemo(
+    () =>
+      indexOfPages.find((item) => item.path === location.pathname)?.index ||
+      "1",
+    [location]
+  );
 
   const items: MenuItem[] = [
     getItem(<Link to="/">Todos</Link>, "1", <FormOutlined />),
@@ -46,7 +59,7 @@ const MainPage: FC = (): ReactNode => {
         <Menu
           style={{ userSelect: "none" }}
           theme="dark"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[selectedPage]}
           mode="inline"
           items={items}
         />
@@ -60,4 +73,4 @@ const MainPage: FC = (): ReactNode => {
   );
 };
 
-export default MainPage;
+export default MainLayout;

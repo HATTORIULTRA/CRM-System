@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { FC, memo, ReactNode, useState } from "react";
 import { List, Checkbox, Button, Input, Form } from "antd";
 import { FaPenToSquare, FaTrashCan, FaCheck, FaXmark } from "react-icons/fa6";
 
@@ -142,4 +142,4 @@ const TodoItem: FC<TodoItemProps> = ({ item, fetchTodos }): ReactNode => {
   );
 };
 
-export default TodoItem;
+export default memo(TodoItem);

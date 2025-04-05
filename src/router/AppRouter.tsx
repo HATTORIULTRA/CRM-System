@@ -1,8 +1,8 @@
 import { FC, ReactNode } from "react";
 import { Route, Routes } from "react-router";
 
-import AuthPage from "../pages/AuthPage/AuthPage.tsx";
-import MainPage from "../pages/MainPage/MainPage.tsx";
+import AuthLayout from "../layouts/AuthLayout/AuthLayout.tsx";
+import MainLayout from "../layouts/MainLayout/MainLayout.tsx";
 import TodoPage from "../pages/TodoPage/TodoPage.tsx";
 import ProfilePage from "../pages/ProfilePage/ProfilePage.tsx";
 import PrivateWrapper from "../components/PrivateWrapper/PrivateWrapper.tsx";
@@ -15,7 +15,7 @@ const AppRouter: FC = (): ReactNode => {
   return (
     <Routes>
       <Route element={<PublicWrapper />}>
-        <Route path="/auth/*" element={<AuthPage />}>
+        <Route path="/auth/*" element={<AuthLayout />}>
           <Route index element={<Login />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
@@ -23,7 +23,7 @@ const AppRouter: FC = (): ReactNode => {
       </Route>
 
       <Route element={<PrivateWrapper />}>
-        <Route path="/*" element={<MainPage />}>
+        <Route path="/*" element={<MainLayout />}>
           <Route index element={<TodoPage />} />
           <Route path="todo" element={<TodoPage />} />
           <Route path="profile" element={<ProfilePage />} />

@@ -1,7 +1,5 @@
 import axios from "axios";
-import TokenHelper from "../helpers/token.helper.ts";
-
-const tokenHelper = new TokenHelper();
+import tokenHelper from "../helpers/token.helper.ts";
 
 export const API_URL = "https://easydev.club/api/v1";
 
@@ -12,9 +10,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use((config) => {
   const token = tokenHelper.tokenFromHelper.accessToken;
-  if (token && config.url !== "/auth/refresh") {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
@@ -26,13 +22,12 @@ instance.interceptors.response.use(
     const originalRequest = error.config;
 
     if (
-      error.response.status == 401 &&
-      error.config &&
-      !error.config._isRetry &&
-      originalRequest.url !== "/auth/signin" &&
-      originalRequest.url !== "/user/logout"
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/auth/refresh" &&
+      originalRequest.url !== "auth/logout"
     ) {
-      originalRequest._isRetry = true;
+      originalRequest._retry = true;
       try {
         const refreshToken: string | null =
           tokenHelper.tokenFromHelper.refreshToken;
@@ -44,8 +39,10 @@ instance.interceptors.response.use(
 
         tokenHelper.setAccessToken = res.data.accessToken;
         tokenHelper.setRefreshTokenToLocalStorage = res.data.refreshToken;
+
         axios.defaults.headers.common["Authorization"] =
-          "Bearer " + res.data.accessToken;
+          tokenHelper.tokenFromHelper.accessToken;
+
         return instance.request(originalRequest);
       } catch (e) {
         console.log(e);

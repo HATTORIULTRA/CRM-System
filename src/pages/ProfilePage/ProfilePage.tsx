@@ -2,7 +2,7 @@ import { FC, ReactNode, useEffect } from "react";
 import { Button, notification } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
-import { getMe, logoutUser } from "../../store/slices/authSlice.ts";
+import { getUserProfile, logoutUser } from "../../store/slices/authSlice.ts";
 import s from "./ProfilePage.module.scss";
 
 const ProfilePage: FC = (): ReactNode => {
@@ -21,7 +21,7 @@ const ProfilePage: FC = (): ReactNode => {
   };
 
   useEffect(() => {
-    dispatch(getMe());
+    dispatch(getUserProfile());
   }, []);
 
   return (

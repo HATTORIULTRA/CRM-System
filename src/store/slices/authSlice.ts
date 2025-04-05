@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { notification } from "antd";
 
-import instance, { API_URL } from "../../api/axios.ts";
+import instance from "../../api/axios.ts";
 import {
   AuthData,
   AxiosResponse,
@@ -12,9 +12,7 @@ import {
   Token,
   UserRegistration,
 } from "../../types/IAuth.ts";
-import TokenHelper from "../../helpers/token.helper.ts";
-
-const tokenHelper = new TokenHelper();
+import tokenHelper from "../../helpers/token.helper.ts";
 
 const initialState: IAuthState = {
   user: null,
@@ -128,9 +126,9 @@ export const checkAuth = createAsyncThunk(
     try {
       const refreshToken: string | null =
         tokenHelper.tokenFromHelper.refreshToken;
-      const res = await instance.post(`${API_URL}/auth/refresh`, {
-        refreshToken,
-      });
+
+      const res = await instance.post("/auth/refresh", { refreshToken });
+
       return res.data;
     } catch (err: any) {
       const error: AxiosError<KnownError> = err;
@@ -143,7 +141,7 @@ export const checkAuth = createAsyncThunk(
   }
 );
 
-export const getMe = createAsyncThunk<Profile>(
+export const getUserProfile = createAsyncThunk<Profile>(
   "auth/getMe",
   async (_, { rejectWithValue }) => {
     try {
@@ -233,14 +231,14 @@ export const authSlice = createSlice({
       })
 
       // GET ME
-      .addCase(getMe.pending, (state) => {
+      .addCase(getUserProfile.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getMe.fulfilled, (state, action) => {
+      .addCase(getUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
       })
-      .addCase(getMe.rejected, (state) => {
+      .addCase(getUserProfile.rejected, (state) => {
         state.isLoading = false;
       })
 

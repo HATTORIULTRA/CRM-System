@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import { FC, memo, ReactNode } from "react";
 import { Flex, Radio } from "antd";
 
 import { TodoInfo } from "../../types/apiTypes.ts";
@@ -51,4 +51,4 @@ const TodoFilters: FC<TodoFiltersProps> = ({
   );
 };
 
-export default TodoFilters;
+export default memo(TodoFilters);

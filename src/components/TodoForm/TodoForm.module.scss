@@ -1,23 +1,23 @@
 .formWrapper {
-	margin-bottom: 40px;
-	position: relative;
+  margin-bottom: 40px;
+  position: relative;
 
-	.form {
-		max-width: 900px;
-		.input {
-			background-color: white;
-			padding: 13px 10px;
-			font-size: 18px;
-			outline: none;
-			min-width: 625px;
-			margin-right: 10px;
-		}
+  .form {
+    max-width: 900px;
+    .input {
+      background-color: white;
+      padding: 13px 10px;
+      font-size: 18px;
+      outline: none;
+      min-width: 625px;
+      margin-right: 10px;
+    }
 
-		.button {
-			width: 130px;
-			height: 55px;
-			color: white;
-			font-size: 18px;
-		}
-	}
+    .button {
+      width: 130px;
+      height: 55px;
+      color: white;
+      font-size: 18px;
+    }
+  }
 }

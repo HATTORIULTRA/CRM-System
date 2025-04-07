@@ -1,71 +1,45 @@
-import { FC, ReactNode, Key, useState } from "react";
-import { Link, Route, Routes } from "react-router";
-import type { MenuProps } from "antd";
-import { Layout, Menu } from "antd";
-import { OrderedListOutlined, UserOutlined } from "@ant-design/icons";
+import { FC, ReactNode, useEffect, useState } from "react";
+import { BrowserRouter } from "react-router";
 
-import TodoPage from "./pages/TodoPage/TodoPage.tsx";
-import ProfilePage from "./pages/ProfilePage/ProfilePage.tsx";
-import logotype from "./assets/logoImg.png";
-
-const { Content, Sider } = Layout;
-
-type MenuItem = Required<MenuProps>["items"][number];
-
-function getItem(
-	label: ReactNode,
-	key: Key,
-	icon?: ReactNode,
-	children?: MenuItem[]
-): MenuItem {
-	return {
-		key,
-		icon,
-		children,
-		label,
-	} as MenuItem;
-}
-
-const items: MenuItem[] = [
-	getItem(<Link to="/">Todos</Link>, "1", <OrderedListOutlined />),
-	getItem(<Link to="/profile">My Profile</Link>, "2", <UserOutlined />),
-];
+import AppRouter from "./router/AppRouter.tsx";
+import { useAppDispatch } from "./hooks/redux.ts";
+import { checkAuth } from "./store/slices/authSlice.ts";
+import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner.tsx";
 
 const App: FC = (): ReactNode => {
-	const [collapsed, setCollapsed] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const [appLoading, setAppLoading] = useState(true);
 
-	return (
-		<div className="app">
-			<Layout style={{ minHeight: "100vh" }}>
-				<Sider
-					onDoubleClick={() => setCollapsed((prev) => !prev)}
-					collapsible
-					collapsed={collapsed}
-					onCollapse={(value) => setCollapsed(value)}
-				>
-					<div className="demo-logo-vertical">
-						<img width={45} src={logotype} alt="logotype" />
-						{!collapsed && <h1 className="logoText">CRM</h1>}
-					</div>
-					<Menu
-						style={{ userSelect: "none" }}
-						theme="dark"
-						defaultSelectedKeys={["1"]}
-						mode="inline"
-						items={items}
-					/>
-				</Sider>
-				<Layout>
-					<Content style={{ margin: "0 16px" }}>
-						<Routes>
-							<Route path="/" element={<TodoPage />} />
-							<Route path="/profile" element={<ProfilePage />} />
-						</Routes>
-					</Content>
-				</Layout>
-			</Layout>
-		</div>
-	);
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      if (window.localStorage.getItem("refreshToken")) {
+        try {
+          await dispatch(checkAuth()).unwrap();
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setAppLoading(false);
+        }
+      }
+
+      setAppLoading(false);
+      return;
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  if (appLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    <div className="app">
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
+    </div>
+  );
 };
 
 export default App;

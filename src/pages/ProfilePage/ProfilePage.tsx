@@ -8,6 +8,7 @@ import s from "./ProfilePage.module.scss";
 const ProfilePage: FC = (): ReactNode => {
   const { user, isLoading } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  console.log(user);
 
   const onLogoutClick = async () => {
     await dispatch(logoutUser());

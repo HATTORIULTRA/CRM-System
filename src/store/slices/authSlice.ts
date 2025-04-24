@@ -203,8 +203,8 @@ export const authSlice = createSlice({
         state.status = action.payload.status;
         state.isLoading = false;
         state.isAuth = true;
-        tokenHelper.setAccessToken = action.payload.data.accessToken;
-        tokenHelper.setRefreshTokenToLocalStorage =
+        tokenHelper.accessToken = action.payload.data.accessToken;
+        tokenHelper.refreshTokenToLocalStorage =
           action.payload.data.refreshToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -220,8 +220,8 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.status = action.payload.status;
         state.isAuth = true;
-        tokenHelper.setAccessToken = action.payload.accessToken;
-        tokenHelper.setRefreshTokenToLocalStorage = action.payload.refreshToken;
+        tokenHelper.accessToken = action.payload.accessToken;
+        tokenHelper.refreshTokenToLocalStorage = action.payload.refreshToken;
       })
       .addCase(checkAuth.rejected, (state) => {
         state.isLoading = false;
@@ -251,7 +251,7 @@ export const authSlice = createSlice({
         state.user = null;
         state.isLoading = false;
         state.status = null;
-        tokenHelper.setAccessToken = null;
+        tokenHelper.accessToken = null;
         tokenHelper.removeRefreshTokenFromLS();
       });
   },

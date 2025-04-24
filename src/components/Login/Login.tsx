@@ -29,6 +29,7 @@ const Login: FC = (): ReactNode => {
         <Form.Item
           label="Login"
           name="login"
+          initialValue={"qwerty"}
           rules={[
             {
               required: true,
@@ -53,6 +54,7 @@ const Login: FC = (): ReactNode => {
         <Form.Item
           label="Password"
           name="password"
+          initialValue={"430313"}
           rules={[
             {
               required: true,

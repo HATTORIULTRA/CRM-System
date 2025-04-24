@@ -1,0 +1,157 @@
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router";
+import { Button, Form, Input, notification } from "antd";
+
+import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
+import {
+  retrieveUsersProfile,
+  updateUserProfile,
+} from "../../store/slices/adminSlice.ts";
+import { UserRequest } from "../../types/IAdmin.ts";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.tsx";
+import s from "../../components/TodoForm/TodoForm.module.scss";
+
+const UserProfilePage = () => {
+  const dispatch = useAppDispatch();
+  const { userProfile, isLoading } = useAppSelector((state) => state.admin);
+
+  const [activeEdit, setActiveEdit] = useState(false);
+  const [form] = Form.useForm();
+  const { userId } = useParams();
+
+  if (!userId) {
+    return <h1>Ошибка! Нет ID пользователя.</h1>;
+  }
+
+  const onFinish = async (values: UserRequest) => {
+    console.log(values);
+    await dispatch(updateUserProfile({ userId: +userId, values }));
+    await dispatch(retrieveUsersProfile(+userId));
+    setActiveEdit(false);
+  };
+
+  useEffect(() => {
+    const initializeUserProfile = async () => {
+      try {
+        await dispatch(retrieveUsersProfile(+userId));
+      } catch (e) {
+        console.log(e);
+        notification.config({ maxCount: 3 });
+        notification.error({
+          message: "Ошибка загрузки профиля",
+          description: "Попробуйте позже",
+          placement: "bottomRight",
+          duration: 3,
+        });
+      }
+    };
+
+    initializeUserProfile();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    <div>
+      {activeEdit ? (
+        <div>
+          <h1>Режим редактирования</h1>
+          <Form
+            form={form}
+            name="basic"
+            layout="inline"
+            autoComplete="off"
+            onFinish={onFinish}
+            initialValues={{
+              username: userProfile?.username,
+              email: userProfile?.email,
+              phoneNumber: userProfile?.phoneNumber,
+            }}
+          >
+            <Form.Item
+              name="username"
+              rules={[
+                {
+                  min: 2,
+                  message: "Количество символов должно быть больше 2!",
+                },
+                {
+                  max: 24,
+                  message: "Количество символов должно быть меньше 24!",
+                },
+                {
+                  whitespace: true,
+                  message: "Имя не может состоять из пробелов!",
+                },
+                {
+                  required: true,
+                  message: "Username обязателен!",
+                },
+                {
+                  pattern: /^[a-zA-Z0-9а-яА-ЯёЁ.,!?() ]/,
+                  message: "Только латинские буквы и цифры!",
+                },
+              ]}
+            >
+              <Input className={s.input} />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              rules={[
+                { type: "email", message: "Некорректный email!" },
+                { required: true, message: "Email обязателен!" },
+              ]}
+            >
+              <Input className={s.input} />
+            </Form.Item>
+            <Form.Item
+              name="phoneNumber"
+              rules={[
+                {
+                  pattern: /^\+7\d{10}$/,
+                  message: 'Номер должен быть формата "+7999..."!',
+                },
+              ]}
+            >
+              <Input className={s.input} />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Save
+              </Button>
+            </Form.Item>
+          </Form>
+
+          <Button danger variant="solid" onClick={() => setActiveEdit(false)}>
+            Cancel
+          </Button>
+        </div>
+      ) : (
+        <div>
+          <h1>Профиль пользователя</h1>
+          <h2>Имя пользователя: {userProfile?.username}</h2>
+          <h2>Почта пользователя: {userProfile?.email}</h2>
+          <h2>
+            Номер телефона пользователя:{" "}
+            {!userProfile?.phoneNumber
+              ? "Номер не указан"
+              : userProfile?.phoneNumber}
+          </h2>
+
+          <Button
+            onClick={() => setActiveEdit(true)}
+            type="primary"
+            color={"primary"}
+          >
+            Edit
+          </Button>
+        </div>
+      )}
+      <Link to={"/users"}>Назад</Link>
+    </div>
+  );
+};
+
+export default UserProfilePage;

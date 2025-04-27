@@ -25,9 +25,24 @@ const UserProfilePage = () => {
 
   const onFinish = async (values: UserRequest) => {
     console.log(values);
-    await dispatch(updateUserProfile({ userId: +userId, values }));
-    await dispatch(retrieveUsersProfile(+userId));
-    setActiveEdit(false);
+    const { username, email, phoneNumber } = values;
+    const newValues: UserRequest = {};
+    if (username !== userProfile?.username) {
+      newValues.username = username;
+    }
+    if (email !== userProfile?.email) {
+      newValues.email = email;
+    }
+    if (phoneNumber !== userProfile?.phoneNumber) {
+      newValues.phoneNumber = phoneNumber;
+    }
+    if (Object.keys(newValues).length > 0) {
+      await dispatch(updateUserProfile({ userId: +userId, values: newValues }));
+      await dispatch(retrieveUsersProfile(+userId));
+      setActiveEdit(false);
+    } else {
+      setActiveEdit(false);
+    }
   };
 
   useEffect(() => {
@@ -99,10 +114,7 @@ const UserProfilePage = () => {
             </Form.Item>
             <Form.Item
               name="email"
-              rules={[
-                { type: "email", message: "Некорректный email!" },
-                { required: true, message: "Email обязателен!" },
-              ]}
+              rules={[{ type: "email", message: "Некорректный email!" }]}
             >
               <Input className={s.input} />
             </Form.Item>

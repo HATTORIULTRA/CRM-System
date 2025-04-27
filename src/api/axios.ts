@@ -25,7 +25,8 @@ instance.interceptors.response.use(
       error.response?.status === 401 &&
       !originalRequest._retry &&
       originalRequest.url !== "/auth/refresh" &&
-      originalRequest.url !== "auth/logout"
+      originalRequest.url !== "auth/logout" &&
+      originalRequest.url !== "/auth/signin"
     ) {
       originalRequest._retry = true;
       try {
@@ -48,6 +49,7 @@ instance.interceptors.response.use(
         console.log(e);
         tokenHelper.accessToken = null;
         tokenHelper.removeRefreshTokenFromLS();
+        location.href = "/auth/login";
       }
     }
     throw error;

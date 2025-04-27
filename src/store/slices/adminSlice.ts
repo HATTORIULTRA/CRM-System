@@ -118,7 +118,9 @@ export const updateUserProfile = createAsyncThunk<
   "admin/updateUserProfile",
   async ({ userId, values }, { rejectWithValue }) => {
     try {
-      return instance.put(`/admin/users/${userId}`, values);
+      return instance.put(`/admin/users/${userId}`, {
+        ...values,
+      });
     } catch (err: any) {
       const error: AxiosError<KnownError> = err;
       if (!error.response) {

@@ -27,6 +27,7 @@ import {
   unlockUser,
   addRoleToUser,
   resetUserRoles,
+  removeRoleFromUser,
 } from "../../store/slices/adminSlice.ts";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.tsx";
 import useDebounce from "../../hooks/useDebounce.tsx";
@@ -148,14 +149,39 @@ const UsersPage: FC = (): ReactNode => {
     await allUsersWithFilters();
   };
 
-  const handleAddRole = async (userId: number, newRole: Roles) => {
-    await dispatch(addRoleToUser({ userId, newRole }));
-    await allUsersWithFilters();
+  const handleAddRole = (userId: number, role: Roles) => {
+    Modal.confirm({
+      title: `Add ${role} role to this user?`,
+      okText: "Yes",
+      onOk: async () => {
+        await dispatch(addRoleToUser({ userId, role }));
+        await allUsersWithFilters();
+      },
+    });
+  };
+
+  const handleRemoveRole = (userId: number, role: Roles) => {
+    Modal.confirm({
+      title: `Remove ${role} from this user?`,
+      okText: "Yes",
+      okType: "danger",
+      onOk: async () => {
+        await dispatch(removeRoleFromUser({ userId, role }));
+        await allUsersWithFilters();
+      },
+    });
   };
 
   const handleResetRoles = async (userId: number) => {
-    await dispatch(resetUserRoles(userId));
-    await allUsersWithFilters();
+    Modal.confirm({
+      title: `Remove all roles from the user?`,
+      okText: "Yes",
+      okType: "danger",
+      onOk: async () => {
+        await dispatch(resetUserRoles(userId));
+        await allUsersWithFilters();
+      },
+    });
   };
 
   const columns: TableProps<User>["columns"] = [
@@ -288,8 +314,19 @@ const UsersPage: FC = (): ReactNode => {
                     >
                       Добавить роль модератора
                     </Button>
+                    {item.roles.length > 0 &&
+                      item.roles
+                        .filter((role: Roles) => role !== Roles.USER)
+                        .map((role: Roles) => (
+                          <Button
+                            key={role}
+                            onClick={() => handleRemoveRole(item.id, role)}
+                          >
+                            Убрать {role}
+                          </Button>
+                        ))}
                     <Button onClick={() => handleResetRoles(item.id)}>
-                      Убрать доп. роли
+                      Убрать все доп. роли
                     </Button>
                   </div>
                 }

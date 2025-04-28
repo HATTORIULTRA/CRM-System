@@ -6,8 +6,9 @@ import {
   IAdminState,
   IUpdateUserProfile,
   User,
-  IAddRoleToUser,
+  IUserRoleChange,
   IGetAllUsers,
+  Roles,
 } from "../../types/IAdmin.ts";
 
 const initialState: IAdminState = {
@@ -134,14 +135,37 @@ export const updateUserProfile = createAsyncThunk<
 
 export const addRoleToUser = createAsyncThunk<
   AxiosResponse<User>,
-  IAddRoleToUser
->("admin/addRoleToUser", async ({ userId, newRole }, { rejectWithValue }) => {
+  IUserRoleChange
+>("admin/addRoleToUser", async ({ userId, role }, { rejectWithValue }) => {
   try {
     const userData = await instance.get(`/admin/users/${userId}`);
     const userRoles = userData.data.roles;
 
     return await instance.post(`/admin/users/${userId}/rights`, {
-      roles: [...userRoles, newRole],
+      roles: [...userRoles, role],
+    });
+  } catch (err: any) {
+    const error: AxiosError<KnownError> = err;
+    if (!error.response) {
+      throw err;
+    }
+    console.log(rejectWithValue(error.response));
+    return rejectWithValue(error.response);
+  }
+});
+
+export const removeRoleFromUser = createAsyncThunk<
+  AxiosResponse<User>,
+  IUserRoleChange
+>("admin/removeRoleFromUser", async ({ userId, role }, { rejectWithValue }) => {
+  try {
+    const userData = await instance.get(`/admin/users/${userId}`);
+    const userRoles = userData.data.roles;
+    const updatedRoles = userRoles.filter(
+      (currRole: Roles) => currRole !== role
+    );
+    return await instance.post(`/admin/users/${userId}/rights`, {
+      roles: [...updatedRoles],
     });
   } catch (err: any) {
     const error: AxiosError<KnownError> = err;

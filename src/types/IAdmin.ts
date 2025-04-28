@@ -19,9 +19,9 @@ export interface IUpdateUserProfile {
   values: UserRequest;
 }
 
-export interface IAddRoleToUser {
+export interface IUserRoleChange {
   userId: number;
-  newRole: Roles;
+  role: Roles;
 }
 
 export interface IGetAllUsers {

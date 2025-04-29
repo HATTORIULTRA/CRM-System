@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 
 import { useAppSelector } from "../hooks/redux.ts";
 import { Roles } from "../types/IAdmin.ts";
+import { useHasRole } from "../hooks/useHasRole.tsx";
 
 import AuthLayout from "../layouts/AuthLayout/AuthLayout.tsx";
 import MainLayout from "../layouts/MainLayout/MainLayout.tsx";
@@ -18,6 +19,8 @@ import UserProfilePage from "../pages/UserProfilePage/UserProfilePage.tsx";
 
 const AppRouter: FC = (): ReactNode => {
   const { user } = useAppSelector((state) => state.auth);
+  const isAdmin = useHasRole(Roles.ADMIN);
+  const isModerator = useHasRole(Roles.MODERATOR);
 
   return (
     <Routes>
@@ -36,8 +39,7 @@ const AppRouter: FC = (): ReactNode => {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="users/:userId" element={<UserProfilePage />} />
-          {(user && user.roles.includes(Roles.ADMIN)) ||
-          (user && user.roles.includes(Roles.MODERATOR)) ? (
+          {(user && isAdmin) || isModerator ? (
             <Route path="users" element={<UsersPage />} />
           ) : (
             <Route path="*" element={<ErrorPage />} />

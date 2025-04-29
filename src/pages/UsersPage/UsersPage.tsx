@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import {
   Tooltip,
@@ -29,6 +29,7 @@ import {
   resetUserRoles,
   removeRoleFromUser,
 } from "../../store/slices/adminSlice.ts";
+import { useHasRole } from "../../hooks/useHasRole.tsx";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.tsx";
 import useDebounce from "../../hooks/useDebounce.tsx";
 import SearchBar from "../../components/SearchBar/SearchBar.tsx";
@@ -52,6 +53,8 @@ const UsersPage: FC = (): ReactNode => {
   const { user } = useAppSelector((state) => state.auth);
   const debouncedValue = useDebounce(searchValue, 1000);
   const dispatch = useAppDispatch();
+
+  const isAdmin = useHasRole(Roles.ADMIN);
 
   const filterButtons: FilterButtons[] = [
     { title: "Все", isBlocked: "" },
@@ -99,7 +102,7 @@ const UsersPage: FC = (): ReactNode => {
     }
   };
 
-  const allUsersWithFilters = async () => {
+  const allUsersWithFilters = useCallback(async () => {
     await dispatch(
       getAllUsers({
         searchValue: debouncedValue,
@@ -108,10 +111,10 @@ const UsersPage: FC = (): ReactNode => {
         sortOrder: sortOrder,
       })
     );
-  };
+  }, [debouncedValue, currentFilter, sortBy, sortOrder]);
 
   const handleRemoveUser = (id: number) => {
-    if (user && user.roles.includes(Roles.ADMIN)) {
+    if (user && isAdmin) {
       Modal.confirm({
         title: "Are you sure you want to delete this user?",
         okText: "Yes",
@@ -275,7 +278,7 @@ const UsersPage: FC = (): ReactNode => {
       render: (item) => {
         return (
           <Space size={"middle"}>
-            {user && user.roles.includes(Roles.ADMIN) ? (
+            {user && isAdmin ? (
               <Tooltip title="Delete user">
                 <DeleteOutlined
                   onClick={() => handleRemoveUser(item.id)}
@@ -296,7 +299,7 @@ const UsersPage: FC = (): ReactNode => {
                 <a onClick={() => handleUnlockUser(item.id)}>Unlock</a>
               </Tooltip>
             )}
-            {user && user.roles.includes(Roles.ADMIN) ? (
+            {user && isAdmin ? (
               <Popover
                 content={
                   <div
@@ -379,7 +382,7 @@ const UsersPage: FC = (): ReactNode => {
             searchValue={searchValue}
             setSearchValue={setSearchValue}
           />
-          {user && user.roles.includes(Roles.ADMIN) ? (
+          {user && isAdmin ? (
             <UsersFilter
               filterButtons={filterButtons}
               activeFilter={activeFilter}

@@ -9,7 +9,7 @@ import {
 } from "../../store/slices/adminSlice.ts";
 import { UserRequest } from "../../types/IAdmin.ts";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.tsx";
-import s from "../../components/TodoForm/TodoForm.module.scss";
+import s from "./UserProfilePage.module.scss";
 
 const UserProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -141,17 +141,23 @@ const UserProfilePage = () => {
           </Button>
         </div>
       ) : (
-        <div>
-          <h1>Профиль пользователя</h1>
-          <h2>Имя пользователя: {userProfile?.username}</h2>
-          <h2>Почта пользователя: {userProfile?.email}</h2>
-          <h2>
+        <div className={s.wrapper}>
+          <h2 className={s.title}>Профиль пользователя</h2>
+          <h3 className={s.userData}>
+            Имя пользователя: {userProfile?.username}
+          </h3>
+          <h3 className={s.userData}>
+            Почта пользователя: {userProfile?.email}
+          </h3>
+          <h3 className={s.userData}>
             Номер телефона пользователя:{" "}
             {!userProfile?.phoneNumber
               ? "Номер не указан"
               : userProfile?.phoneNumber}
-          </h2>
-
+          </h3>
+          <div className={s.roles}>
+            Роли: {userProfile?.roles.map((item) => <h3 key={item}>{item}</h3>)}
+          </div>
           <Button
             onClick={() => setActiveEdit(true)}
             type="primary"

@@ -28,18 +28,18 @@ const ProfilePage: FC = (): ReactNode => {
   return (
     <div className={s.wrapper}>
       <div className={s.inner}>
-        <h2>Profile</h2>
-        <h2>Имя: {user?.username}</h2>
-        <h3>Почта: {user?.email}</h3>
-        <div style={{ display: "flex", gap: "10px" }}>
-          Роли: {user?.roles.map((item) => <h3 key={item}>{item}</h3>)}
-        </div>
-        <h3>
+        <h2 className={s.title}>Profile</h2>
+        <h2 className={s.userData}>Имя: {user?.username}</h2>
+        <h2 className={s.userData}>Почта: {user?.email}</h2>
+        <h3 className={s.userData}>
           Телефон:{" "}
           {user?.phoneNumber.length === 0
             ? "Номер не указан"
             : user?.phoneNumber}
         </h3>
+        <div className={s.roles}>
+          Роли: {user?.roles.map((item) => <h3 key={item}>{item}</h3>)}
+        </div>
       </div>
       <Button
         onClick={onLogoutClick}

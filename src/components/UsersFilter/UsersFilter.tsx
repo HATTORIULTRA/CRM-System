@@ -1,23 +1,22 @@
 import { FC, ReactNode, SetStateAction, Dispatch } from "react";
 import { Button, Popover } from "antd";
 
-import { getAllUsers } from "../../store/slices/adminSlice.ts";
 import { FilterOutlined } from "@ant-design/icons";
-import { useAppDispatch } from "../../hooks/redux.ts";
 import { FilterButtons } from "../../pages/UsersPage/UsersPage.tsx";
 
 interface UsersFilterProps {
   filterButtons: FilterButtons[];
   activeFilter: number;
   setActiveFilter: Dispatch<SetStateAction<number>>;
+  handleBlockedFilter: (filterIndex: number) => void;
 }
 
 const UsersFilter: FC<UsersFilterProps> = ({
   filterButtons,
   activeFilter,
   setActiveFilter,
+  handleBlockedFilter,
 }): ReactNode => {
-  const dispatch = useAppDispatch();
   return (
     <Popover
       content={
@@ -39,8 +38,7 @@ const UsersFilter: FC<UsersFilterProps> = ({
                   : {}
               }
               onClick={() => {
-                const active = filterButtons[i].isBlocked;
-                dispatch(getAllUsers({ isBlocked: active }));
+                handleBlockedFilter(i);
                 setActiveFilter(i);
               }}
               key={i}

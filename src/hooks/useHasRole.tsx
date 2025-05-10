@@ -1,5 +1,5 @@
 import { useAppSelector } from "./redux.ts";
-import { Roles } from "../types/IAdmin";
+import { Roles } from "../types/admin.ts";
 
 export function useHasRole(role: Roles) {
   const { user } = useAppSelector((state) => state.auth);

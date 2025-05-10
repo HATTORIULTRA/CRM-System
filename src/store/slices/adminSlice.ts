@@ -1,18 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AxiosError, AxiosResponse } from "axios";
-import { KnownError } from "../../types/IAuth.ts";
+import { KnownError } from "../../types/auth.ts";
 import instance from "../../api/axios.ts";
-import {
-  IAdminState,
-  IUpdateUserProfile,
-  User,
-  IUserRoleChange,
-  IGetAllUsers,
-  Roles,
-} from "../../types/IAdmin.ts";
+import { User, IGetAllUsers, UserRequest, Roles } from "../../types/admin.ts";
+
+interface IAdminState {
+  users: User[];
+  usersAmount: number;
+  userProfile: User | null;
+  isLoading: boolean;
+}
 
 const initialState: IAdminState = {
   users: [],
+  usersAmount: 0,
   userProfile: null,
   isLoading: false,
 };
@@ -20,17 +21,20 @@ const initialState: IAdminState = {
 export const getAllUsers = createAsyncThunk<
   AxiosResponse<User[]>,
   IGetAllUsers
->("admin/getAllUsers", async (querys, { rejectWithValue }) => {
+>("admin/getAllUsers", async (filters, { rejectWithValue }) => {
   try {
-    const {
-      searchValue = "",
-      isBlocked = "",
-      sortBy = "",
-      sortOrder = "",
-    } = querys || {};
-    const res = await instance.get(
-      `/admin/users?limit=1000&search=${searchValue}&isBlocked=${isBlocked}&sortBy=${sortBy}&sortOrder=${sortOrder}`
-    );
+    const { searchValue, isBlocked, sortBy, sortOrder, limit, offset } =
+      filters || {};
+    const res = await instance.get(`/admin/users`, {
+      params: {
+        search: searchValue,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        isBlocked: isBlocked,
+        limit: limit,
+        offset: offset,
+      },
+    });
     console.log(res.data);
     return res.data;
   } catch (err: any) {
@@ -43,21 +47,21 @@ export const getAllUsers = createAsyncThunk<
   }
 });
 
-export const retrieveUsersProfile = createAsyncThunk<
-  AxiosResponse<User>,
-  number
->("admin/retrieveUsersProfile", async (userId: number, { rejectWithValue }) => {
-  try {
-    return await instance.get(`/admin/users/${userId}`);
-  } catch (err: any) {
-    const error: AxiosError<KnownError> = err;
-    if (!error.response) {
-      throw err;
+export const getUserByID = createAsyncThunk<AxiosResponse<User>, number>(
+  "admin/getUserByID",
+  async (userId: number, { rejectWithValue }) => {
+    try {
+      return await instance.get(`/admin/users/${userId}`);
+    } catch (err: any) {
+      const error: AxiosError<KnownError> = err;
+      if (!error.response) {
+        throw err;
+      }
+      console.log(rejectWithValue(error.response));
+      return rejectWithValue(error.response);
     }
-    console.log(rejectWithValue(error.response));
-    return rejectWithValue(error.response);
   }
-});
+);
 
 export const removeUser = createAsyncThunk<AxiosResponse<string>, number>(
   "admin/removeUser",
@@ -114,14 +118,12 @@ export const unlockUser = createAsyncThunk<AxiosResponse<string>, number>(
 
 export const updateUserProfile = createAsyncThunk<
   AxiosResponse<User>,
-  IUpdateUserProfile
+  { userId: number; values: UserRequest }
 >(
   "admin/updateUserProfile",
   async ({ userId, values }, { rejectWithValue }) => {
     try {
-      return instance.put(`/admin/users/${userId}`, {
-        ...values,
-      });
+      return instance.put(`/admin/users/${userId}`, values);
     } catch (err: any) {
       const error: AxiosError<KnownError> = err;
       if (!error.response) {
@@ -133,17 +135,12 @@ export const updateUserProfile = createAsyncThunk<
   }
 );
 
-export const addRoleToUser = createAsyncThunk<
+export const updateUserRoles = createAsyncThunk<
   AxiosResponse<User>,
-  IUserRoleChange
->("admin/addRoleToUser", async ({ userId, role }, { rejectWithValue }) => {
+  { userId: number; roles: Roles[] }
+>("admin/updateUserRoles", async ({ userId, roles }, { rejectWithValue }) => {
   try {
-    const userData = await instance.get(`/admin/users/${userId}`);
-    const userRoles = userData.data.roles;
-
-    return await instance.post(`/admin/users/${userId}/rights`, {
-      roles: [...userRoles, role],
-    });
+    return await instance.post(`/admin/users/${userId}/rights`, { roles });
   } catch (err: any) {
     const error: AxiosError<KnownError> = err;
     if (!error.response) {
@@ -153,47 +150,6 @@ export const addRoleToUser = createAsyncThunk<
     return rejectWithValue(error.response);
   }
 });
-
-export const removeRoleFromUser = createAsyncThunk<
-  AxiosResponse<User>,
-  IUserRoleChange
->("admin/removeRoleFromUser", async ({ userId, role }, { rejectWithValue }) => {
-  try {
-    const userData = await instance.get(`/admin/users/${userId}`);
-    const userRoles = userData.data.roles;
-    const updatedRoles = userRoles.filter(
-      (currRole: Roles) => currRole !== role
-    );
-    return await instance.post(`/admin/users/${userId}/rights`, {
-      roles: [...updatedRoles],
-    });
-  } catch (err: any) {
-    const error: AxiosError<KnownError> = err;
-    if (!error.response) {
-      throw err;
-    }
-    console.log(rejectWithValue(error.response));
-    return rejectWithValue(error.response);
-  }
-});
-
-export const resetUserRoles = createAsyncThunk<AxiosResponse<string>, number>(
-  "admin/resetUserRoles",
-  async (userId, { rejectWithValue }) => {
-    try {
-      return instance.post(`/admin/users/${userId}/rights`, {
-        roles: ["USER"],
-      });
-    } catch (err: any) {
-      const error: AxiosError<KnownError> = err;
-      if (!error.response) {
-        throw err;
-      }
-      console.log(rejectWithValue(error.response));
-      return rejectWithValue(error.response);
-    }
-  }
-);
 
 export const adminSLice = createSlice({
   name: "admin",
@@ -208,6 +164,8 @@ export const adminSLice = createSlice({
       })
       .addCase(getAllUsers.fulfilled, (state, action) => {
         state.users = action.payload.data;
+        //@ts-ignore
+        state.usersAmount = action.payload.meta.totalAmount;
         state.isLoading = false;
       })
       .addCase(getAllUsers.rejected, (state) => {
@@ -215,17 +173,17 @@ export const adminSLice = createSlice({
       })
 
       // GET USER PROFILE
-      .addCase(retrieveUsersProfile.pending, (state) => {
+      .addCase(getUserByID.pending, (state) => {
         state.userProfile = null;
         state.isLoading = true;
       })
-      .addCase(retrieveUsersProfile.fulfilled, (state, action) => {
+      .addCase(getUserByID.fulfilled, (state, action) => {
         console.log(action.payload.data);
 
         state.userProfile = action.payload.data;
         state.isLoading = false;
       })
-      .addCase(retrieveUsersProfile.rejected, (state) => {
+      .addCase(getUserByID.rejected, (state) => {
         state.userProfile = null;
         state.isLoading = false;
       })

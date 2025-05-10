@@ -14,31 +14,17 @@ export interface UserRequest {
   phoneNumber?: string;
 }
 
-export interface IUpdateUserProfile {
-  userId: number;
-  values: UserRequest;
-}
-
-export interface IUserRoleChange {
-  userId: number;
-  role: Roles;
-}
-
 export interface IGetAllUsers {
   searchValue?: string;
-  isBlocked?: boolean | string;
+  isBlocked?: boolean;
   sortBy?: string;
-  sortOrder?: string | null | undefined;
+  sortOrder?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export enum Roles {
   ADMIN = "ADMIN",
   MODERATOR = "MODERATOR",
   USER = "USER",
-}
-
-export interface IAdminState {
-  users: User[];
-  userProfile: User | null;
-  isLoading: boolean;
 }

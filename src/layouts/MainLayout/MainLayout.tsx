@@ -1,4 +1,4 @@
-import { FC, Key, ReactNode, useEffect, useMemo, useState } from "react";
+import { FC, Key, ReactNode, useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router";
 import { Layout, Menu, type MenuProps } from "antd";
 import {
@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
-import { Roles } from "../../types/IAdmin.ts";
+import { Roles } from "../../types/admin.ts";
 import logotype from "../../assets/logoImg.png";
 import { getUserProfile } from "../../store/slices/authSlice.ts";
 
@@ -42,12 +42,8 @@ const MainLayout: FC = (): ReactNode => {
     { path: "/users", index: "3" },
   ];
 
-  const selectedPage = useMemo(
-    () =>
-      indexOfPages.find((item) => item.path === location.pathname)?.index ||
-      "1",
-    [location]
-  );
+  const selectedPage = () =>
+    indexOfPages.find((item) => item.path === location.pathname)?.index || "1";
 
   const items: MenuItem[] = [
     getItem(<Link to="/">Todos</Link>, "1", <FormOutlined />),
@@ -82,7 +78,7 @@ const MainLayout: FC = (): ReactNode => {
         <Menu
           style={{ userSelect: "none" }}
           theme="dark"
-          defaultSelectedKeys={[selectedPage]}
+          defaultSelectedKeys={[selectedPage()]}
           mode="inline"
           items={items}
         />

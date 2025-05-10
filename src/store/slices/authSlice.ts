@@ -11,7 +11,7 @@ import {
   Profile,
   Token,
   UserRegistration,
-} from "../../types/IAuth.ts";
+} from "../../types/auth.ts";
 import tokenHelper from "../../helpers/token.helper.ts";
 
 const initialState: IAuthState = {

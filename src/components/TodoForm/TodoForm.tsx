@@ -4,6 +4,7 @@ import { Button, Form, Input } from "antd";
 import { addNewTodo } from "../../api/todosAPI.ts";
 import { TodoInfo } from "../../types/apiTypes.ts";
 import s from "./TodoForm.module.scss";
+import { TODO_VALUE_RULE } from "../../constans/validation.ts";
 
 interface TodoFormProps {
   fetchTodos: () => void;
@@ -40,20 +41,20 @@ const TodoForm: FC<TodoFormProps> = ({ fetchTodos }): ReactNode => {
               message: "Введите название todo!",
             },
             {
-              min: 2,
-              message: "Количество символов должно быть больше 2!",
+              min: TODO_VALUE_RULE.min,
+              message: TODO_VALUE_RULE.messageMin,
             },
             {
-              max: 64,
-              message: "Количество символов должно быть меньше 64!",
+              max: TODO_VALUE_RULE.max,
+              message: TODO_VALUE_RULE.messageMax,
             },
             {
               whitespace: true,
               message: "Название не может состоять из пробелов!",
             },
             {
-              pattern: /^[a-zA-Z0-9а-яА-ЯёЁ.,!?() ]/,
-              message: "Только латинские буквы и цифры!",
+              pattern: TODO_VALUE_RULE.pattern,
+              message: TODO_VALUE_RULE.messagePattern,
             },
           ]}
         >

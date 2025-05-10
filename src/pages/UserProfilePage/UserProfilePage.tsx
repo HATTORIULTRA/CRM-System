@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
-import { Button, Form, Input, notification } from "antd";
+import { Button, Form, Input, notification, Tag, Typography } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import {
-  retrieveUsersProfile,
+  getUserByID,
   updateUserProfile,
 } from "../../store/slices/adminSlice.ts";
-import { UserRequest } from "../../types/IAdmin.ts";
+import { UserRequest } from "../../types/admin.ts";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.tsx";
 import s from "./UserProfilePage.module.scss";
+import isDirtyHelper from "../../helpers/isDirty.helper.ts";
+import {
+  PHONE_NUMBER_RULE,
+  USERNAME_LENGTH_RULES,
+  USERNAME_PATTERN_RULE,
+} from "../../constans/validation.ts";
 
 const UserProfilePage = () => {
+  const { Title, Text } = Typography;
+
   const dispatch = useAppDispatch();
   const { userProfile, isLoading } = useAppSelector((state) => state.admin);
 
@@ -25,20 +33,10 @@ const UserProfilePage = () => {
 
   const onFinish = async (values: UserRequest) => {
     console.log(values);
-    const { username, email, phoneNumber } = values;
-    const newValues: UserRequest = {};
-    if (username !== userProfile?.username) {
-      newValues.username = username;
-    }
-    if (email !== userProfile?.email) {
-      newValues.email = email;
-    }
-    if (phoneNumber !== userProfile?.phoneNumber) {
-      newValues.phoneNumber = phoneNumber;
-    }
+    const newValues = isDirtyHelper(userProfile!, values);
     if (Object.keys(newValues).length > 0) {
       await dispatch(updateUserProfile({ userId: +userId, values: newValues }));
-      await dispatch(retrieveUsersProfile(+userId));
+      await dispatch(getUserByID(+userId));
       setActiveEdit(false);
     } else {
       setActiveEdit(false);
@@ -48,7 +46,7 @@ const UserProfilePage = () => {
   useEffect(() => {
     const initializeUserProfile = async () => {
       try {
-        await dispatch(retrieveUsersProfile(+userId));
+        await dispatch(getUserByID(+userId));
       } catch (e) {
         console.log(e);
         notification.config({ maxCount: 3 });
@@ -89,12 +87,12 @@ const UserProfilePage = () => {
               name="username"
               rules={[
                 {
-                  min: 2,
-                  message: "Количество символов должно быть больше 2!",
+                  min: USERNAME_LENGTH_RULES.min,
+                  message: USERNAME_LENGTH_RULES.messageMin,
                 },
                 {
-                  max: 24,
-                  message: "Количество символов должно быть меньше 24!",
+                  max: USERNAME_LENGTH_RULES.max,
+                  message: USERNAME_LENGTH_RULES.messageMax,
                 },
                 {
                   whitespace: true,
@@ -105,8 +103,8 @@ const UserProfilePage = () => {
                   message: "Username обязателен!",
                 },
                 {
-                  pattern: /^[a-zA-Z0-9а-яА-ЯёЁ.,!?() ]/,
-                  message: "Только латинские буквы и цифры!",
+                  pattern: USERNAME_PATTERN_RULE.pattern,
+                  message: USERNAME_PATTERN_RULE.message,
                 },
               ]}
             >
@@ -122,8 +120,8 @@ const UserProfilePage = () => {
               name="phoneNumber"
               rules={[
                 {
-                  pattern: /^\+7\d{10}$/,
-                  message: 'Номер должен быть формата "+7999..."!',
+                  pattern: PHONE_NUMBER_RULE.pattern,
+                  message: PHONE_NUMBER_RULE.message,
                 },
               ]}
             >
@@ -142,21 +140,22 @@ const UserProfilePage = () => {
         </div>
       ) : (
         <div className={s.wrapper}>
-          <h2 className={s.title}>Профиль пользователя</h2>
-          <h3 className={s.userData}>
+          <Title className={s.title}>Профиль пользователя</Title>
+          <Text className={s.userData}>
             Имя пользователя: {userProfile?.username}
-          </h3>
-          <h3 className={s.userData}>
+          </Text>
+          <Text className={s.userData}>
             Почта пользователя: {userProfile?.email}
-          </h3>
-          <h3 className={s.userData}>
+          </Text>
+          <Text className={s.userData}>
             Номер телефона пользователя:{" "}
             {!userProfile?.phoneNumber
               ? "Номер не указан"
               : userProfile?.phoneNumber}
-          </h3>
+          </Text>
           <div className={s.roles}>
-            Роли: {userProfile?.roles.map((item) => <h3 key={item}>{item}</h3>)}
+            Роли:{" "}
+            {userProfile?.roles.map((item) => <Tag key={item}>{item}</Tag>)}
           </div>
           <Button
             onClick={() => setActiveEdit(true)}
@@ -167,7 +166,9 @@ const UserProfilePage = () => {
           </Button>
         </div>
       )}
-      <Link to={"/users"}>Назад</Link>
+      <Link style={{ marginLeft: "20px" }} to={"/users"}>
+        Назад
+      </Link>
     </div>
   );
 };

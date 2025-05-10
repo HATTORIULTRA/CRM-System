@@ -25,93 +25,87 @@ import {
   removeUser,
   blockUser,
   unlockUser,
-  addRoleToUser,
-  resetUserRoles,
-  removeRoleFromUser,
+  updateUserRoles,
 } from "../../store/slices/adminSlice.ts";
 import { useHasRole } from "../../hooks/useHasRole.tsx";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.tsx";
 import useDebounce from "../../hooks/useDebounce.tsx";
 import SearchBar from "../../components/SearchBar/SearchBar.tsx";
 import UsersFilter from "../../components/UsersFilter/UsersFilter.tsx";
-import { Roles, User } from "../../types/IAdmin.ts";
+import { Roles, User } from "../../types/admin.ts";
 import s from "./UsersPage.module.scss";
 
 export type FilterButtons = {
   title: string;
-  isBlocked: boolean | string;
+  isBlocked?: boolean;
 };
 
 const UsersPage: FC = (): ReactNode => {
   const [tableLoading, setTableLoading] = useState(false);
+
+  const [activeIsBlockedFilter, setActiveIsBlockedFilter] = useState(0);
+  const filterButtons: FilterButtons[] = [
+    { title: "Все", isBlocked: undefined },
+    { title: "Только заблокированные", isBlocked: true },
+    { title: "Только активные", isBlocked: false },
+  ];
+  const isBlockedFilter = filterButtons[activeIsBlockedFilter].isBlocked;
+
   const [searchValue, setSearchValue] = useState("");
-  const [activeFilter, setActiveFilter] = useState(0);
-  const [sortBy, setSortBy] = useState("id");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const debouncedSearchValue = useDebounce(searchValue, 500);
+  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState({
+    sortBy: "id",
+    sortOrder: "asc",
+    limit: 10,
+    offset: page - 1,
+    searchValue: debouncedSearchValue,
+    isBlocked: isBlockedFilter,
+  });
 
   const { users } = useAppSelector((state) => state.admin);
+  const { usersAmount } = useAppSelector((state) => state.admin);
   const { user } = useAppSelector((state) => state.auth);
-  const debouncedValue = useDebounce(searchValue, 1000);
   const dispatch = useAppDispatch();
 
   const isAdmin = useHasRole(Roles.ADMIN);
 
-  const filterButtons: FilterButtons[] = [
-    { title: "Все", isBlocked: "" },
-    { title: "Только заблокированные", isBlocked: true },
-    { title: "Только активные", isBlocked: false },
-  ];
-  const currentFilter = filterButtons[activeFilter].isBlocked;
-
-  const onChange: TableProps<User>["onChange"] = async (
-    _,
+  const onChange: TableProps<User>["onChange"] = (
+    tablePagination,
     __,
-    sorter: SorterResult<User> | SorterResult<User>[]
+    sorter
   ) => {
-    console.log("params", sorter);
+    const nextPage = tablePagination.current ?? 1;
+
+    let sortBy = filter.sortBy;
+    let sortOrder = filter.sortOrder;
+
     const sortObj: SorterResult<User> = Array.isArray(sorter)
       ? sorter[0]
       : sorter;
 
-    if (sortObj.order && sortObj.field) {
-      const sortOrderSlice =
-        sortObj.order === "ascend"
-          ? "asc"
-          : sortObj.order === "descend"
-            ? "desc"
-            : "asc";
-      setSortOrder(sortOrderSlice);
-      setSortBy(sortObj.field as string);
-      await dispatch(
-        getAllUsers({
-          searchValue: debouncedValue,
-          isBlocked: currentFilter,
-          sortBy: sortObj.field as string,
-          sortOrder: sortOrderSlice,
-        })
-      );
-    } else {
-      await dispatch(
-        getAllUsers({
-          searchValue: debouncedValue,
-          isBlocked: currentFilter,
-          sortBy: "id",
-          sortOrder: "asc",
-        })
-      );
+    if (sortObj.field && sortObj.order) {
+      sortBy = sortObj.field as string;
+      sortOrder = sortObj.order === "ascend" ? "asc" : "desc";
     }
+
+    setPage(nextPage);
+    setFilter({
+      sortBy,
+      sortOrder,
+      limit: filter.limit,
+      offset: nextPage - 1,
+      searchValue: debouncedSearchValue,
+      isBlocked: filterButtons[activeIsBlockedFilter].isBlocked,
+    });
   };
 
-  const allUsersWithFilters = useCallback(async () => {
-    await dispatch(
-      getAllUsers({
-        searchValue: debouncedValue,
-        isBlocked: currentFilter,
-        sortBy: sortBy,
-        sortOrder: sortOrder,
-      })
-    );
-  }, [debouncedValue, currentFilter, sortBy, sortOrder]);
+  const allUsersWithFilters = useCallback(
+    async (filters: any) => {
+      await dispatch(getAllUsers(filters));
+    },
+    [debouncedSearchValue, isBlockedFilter, filter]
+  );
 
   const handleRemoveUser = (id: number) => {
     if (user && isAdmin) {
@@ -121,7 +115,7 @@ const UsersPage: FC = (): ReactNode => {
         okType: "danger",
         onOk: async () => {
           await dispatch(removeUser(id));
-          await allUsersWithFilters();
+          await allUsersWithFilters(filter);
         },
       });
     } else {
@@ -142,49 +136,66 @@ const UsersPage: FC = (): ReactNode => {
       okType: "danger",
       onOk: async () => {
         await dispatch(blockUser(userId));
-        await allUsersWithFilters();
+        await allUsersWithFilters(filter);
       },
     });
   };
 
   const handleUnlockUser = async (userId: number) => {
     await dispatch(unlockUser(userId));
-    await allUsersWithFilters();
+    await allUsersWithFilters(filter);
   };
 
-  const handleAddRole = (userId: number, role: Roles) => {
-    Modal.confirm({
-      title: `Add ${role} role to this user?`,
-      okText: "Yes",
-      onOk: async () => {
-        await dispatch(addRoleToUser({ userId, role }));
-        await allUsersWithFilters();
-      },
-    });
+  const handleAddRole = (userId: number, newRole: Roles, roles: Roles[]) => {
+    let newRoles: Roles[] = [];
+    if (roles.includes(newRole)) {
+      newRoles = roles;
+      notification.config({ maxCount: 3 });
+      notification.error({
+        message: "Ошибка",
+        description: "Такая роль уже есть у пользователя!",
+        placement: "bottomRight",
+        duration: 3,
+      });
+    } else {
+      newRoles = [...roles, newRole];
+      Modal.confirm({
+        title: `Add ${newRole} role to this user?`,
+        okText: "Yes",
+        onOk: async () => {
+          await dispatch(updateUserRoles({ userId, roles: newRoles }));
+          await allUsersWithFilters(filter);
+        },
+      });
+    }
   };
 
-  const handleRemoveRole = (userId: number, role: Roles) => {
+  const handleRemoveRole = (
+    userId: number,
+    roleRemove: Roles,
+    roles: Roles[]
+  ) => {
+    const newRoles = roles.filter((role) => role !== roleRemove);
     Modal.confirm({
-      title: `Remove ${role} from this user?`,
+      title: `Remove ${roles} from this user?`,
       okText: "Yes",
       okType: "danger",
       onOk: async () => {
-        await dispatch(removeRoleFromUser({ userId, role }));
-        await allUsersWithFilters();
+        await dispatch(updateUserRoles({ userId, roles: newRoles }));
+        await allUsersWithFilters(filter);
       },
     });
   };
 
-  const handleResetRoles = async (userId: number) => {
-    Modal.confirm({
-      title: `Remove all roles from the user?`,
-      okText: "Yes",
-      okType: "danger",
-      onOk: async () => {
-        await dispatch(resetUserRoles(userId));
-        await allUsersWithFilters();
-      },
-    });
+  const handleBlockedFilter = (filterIndex: number) => {
+    const selectedFilter = filterButtons[filterIndex].isBlocked;
+    setActiveIsBlockedFilter(filterIndex);
+    setPage(1);
+    setFilter((prev) => ({
+      ...prev,
+      isBlocked: selectedFilter,
+      offset: 0,
+    }));
   };
 
   const columns: TableProps<User>["columns"] = [
@@ -309,28 +320,34 @@ const UsersPage: FC = (): ReactNode => {
                       gap: "10px",
                     }}
                   >
-                    <Button onClick={() => handleAddRole(item.id, Roles.ADMIN)}>
+                    <Button
+                      onClick={() =>
+                        handleAddRole(item.id, Roles.ADMIN, item.roles)
+                      }
+                    >
                       Добавить роль админа
                     </Button>
                     <Button
-                      onClick={() => handleAddRole(item.id, Roles.MODERATOR)}
+                      onClick={() =>
+                        handleAddRole(item.id, Roles.MODERATOR, item.roles)
+                      }
                     >
                       Добавить роль модератора
                     </Button>
-                    {item.roles.length > 0 &&
+                    {item.roles &&
+                      item.roles.length > 0 &&
                       item.roles
                         .filter((role: Roles) => role !== Roles.USER)
                         .map((role: Roles) => (
                           <Button
                             key={role}
-                            onClick={() => handleRemoveRole(item.id, role)}
+                            onClick={() =>
+                              handleRemoveRole(item.id, role, item.roles)
+                            }
                           >
                             Убрать {role}
                           </Button>
                         ))}
-                    <Button onClick={() => handleResetRoles(item.id)}>
-                      Убрать все доп. роли
-                    </Button>
                   </div>
                 }
                 title="Дополнительные действия"
@@ -347,27 +364,23 @@ const UsersPage: FC = (): ReactNode => {
   ];
 
   useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+      searchValue: debouncedSearchValue,
+      isBlocked: isBlockedFilter,
+    }));
+  }, [debouncedSearchValue, isBlockedFilter]);
+
+  useEffect(() => {
     setTableLoading(true);
-    const initializeTable = async () => {
-      try {
-        const initialFilter = filterButtons[activeFilter].isBlocked;
-        await dispatch(
-          getAllUsers({
-            searchValue: debouncedValue,
-            isBlocked: initialFilter,
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-          })
-        );
-      } catch (e) {
-        console.log(e);
-        setTableLoading(false);
-      } finally {
-        setTableLoading(false);
-      }
-    };
-    initializeTable();
-  }, [debouncedValue]);
+    try {
+      allUsersWithFilters(filter);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setTableLoading(false);
+    }
+  }, [filter]);
 
   if (tableLoading) {
     return <LoadingSpinner />;
@@ -385,14 +398,20 @@ const UsersPage: FC = (): ReactNode => {
           {user && isAdmin ? (
             <UsersFilter
               filterButtons={filterButtons}
-              activeFilter={activeFilter}
-              setActiveFilter={setActiveFilter}
+              activeFilter={activeIsBlockedFilter}
+              setActiveFilter={setActiveIsBlockedFilter}
+              handleBlockedFilter={handleBlockedFilter}
             />
           ) : null}
         </div>
       </div>
       <Table<User>
-        pagination={{ position: ["bottomCenter"] }}
+        pagination={{
+          position: ["bottomCenter"],
+          total: usersAmount,
+          pageSize: 10,
+          current: page,
+        }}
         columns={columns}
         dataSource={users}
         rowKey="id"

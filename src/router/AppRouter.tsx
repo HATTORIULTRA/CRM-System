@@ -2,7 +2,7 @@ import { FC, ReactNode } from "react";
 import { Route, Routes } from "react-router";
 
 import { useAppSelector } from "../hooks/redux.ts";
-import { Roles } from "../types/IAdmin.ts";
+import { Roles } from "../types/admin.ts";
 import { useHasRole } from "../hooks/useHasRole.tsx";
 
 import AuthLayout from "../layouts/AuthLayout/AuthLayout.tsx";
@@ -37,9 +37,8 @@ const AppRouter: FC = (): ReactNode => {
           <Route index element={<TodoPage />} />
           <Route path="todo" element={<TodoPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="users" element={<UsersPage />} />
           <Route path="users/:userId" element={<UserProfilePage />} />
-          {(user && isAdmin) || isModerator ? (
+          {(user && isAdmin) || (user && isModerator) ? (
             <Route path="users" element={<UsersPage />} />
           ) : (
             <Route path="*" element={<ErrorPage />} />

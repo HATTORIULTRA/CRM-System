@@ -4,7 +4,14 @@ import { Button, Form, FormProps, Input } from "antd";
 
 import { registerUser } from "../../store/slices/authSlice.ts";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
-import { UserRegistration } from "../../types/IAuth.ts";
+import { UserRegistration } from "../../types/auth.ts";
+import {
+  LOGIN_PATTERN_RULE,
+  PASSWORD_LENGTH_RULE,
+  PHONE_NUMBER_RULE,
+  USERNAME_LENGTH_RULES,
+  USERNAME_PATTERN_RULE,
+} from "../../constans/validation.ts";
 
 const Register: FC = (): ReactNode => {
   const [form] = Form.useForm();
@@ -49,16 +56,16 @@ const Register: FC = (): ReactNode => {
                   whitespace: true,
                 },
                 {
-                  pattern: /^[A-Za-zА-ЯЁа-яё]+$/,
-                  message: "Только латинский, либо русский алфавит!",
+                  pattern: USERNAME_PATTERN_RULE.pattern,
+                  message: USERNAME_PATTERN_RULE.message,
                 },
                 {
-                  min: 1,
-                  message: "Количество символов должно быть больше 1!",
+                  min: USERNAME_LENGTH_RULES.min,
+                  message: USERNAME_LENGTH_RULES.messageMin,
                 },
                 {
-                  max: 60,
-                  message: "Количество символов должно быть меньше 60!",
+                  max: USERNAME_LENGTH_RULES.max,
+                  message: USERNAME_LENGTH_RULES.messageMax,
                 },
               ]}
             >
@@ -75,16 +82,16 @@ const Register: FC = (): ReactNode => {
                   whitespace: true,
                 },
                 {
-                  pattern: /^[A-Za-z]+$/,
-                  message: "Только латинский алфавит!",
+                  pattern: LOGIN_PATTERN_RULE.pattern,
+                  message: LOGIN_PATTERN_RULE.message,
                 },
                 {
-                  min: 2,
-                  message: "Количество символов должно быть больше 2!",
+                  min: USERNAME_LENGTH_RULES.min,
+                  message: USERNAME_LENGTH_RULES.messageMin,
                 },
                 {
-                  max: 60,
-                  message: "Количество символов должно быть меньше 60!",
+                  max: USERNAME_LENGTH_RULES.max,
+                  message: USERNAME_LENGTH_RULES.messageMax,
                 },
               ]}
             >
@@ -100,12 +107,12 @@ const Register: FC = (): ReactNode => {
                   message: "Введите пароль!",
                 },
                 {
-                  min: 6,
-                  message: "Количество символов должно быть больше 6!",
+                  min: PASSWORD_LENGTH_RULE.min,
+                  message: PASSWORD_LENGTH_RULE.messageMin,
                 },
                 {
-                  max: 60,
-                  message: "Количество символов должно быть меньше 60!",
+                  max: PASSWORD_LENGTH_RULE.max,
+                  message: PASSWORD_LENGTH_RULE.messageMax,
                 },
               ]}
               hasFeedback
@@ -124,12 +131,12 @@ const Register: FC = (): ReactNode => {
                   message: "Подтвердите ваш пароль!",
                 },
                 {
-                  min: 6,
-                  message: "Количество символов должно быть больше 6!",
+                  min: PASSWORD_LENGTH_RULE.min,
+                  message: PASSWORD_LENGTH_RULE.messageMin,
                 },
                 {
-                  max: 60,
-                  message: "Количество символов должно быть меньше 60!",
+                  max: PASSWORD_LENGTH_RULE.max,
+                  message: PASSWORD_LENGTH_RULE.messageMax,
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -168,8 +175,8 @@ const Register: FC = (): ReactNode => {
               label="Phone Number"
               rules={[
                 {
-                  pattern: /^\+7\d{10}$/,
-                  message: 'Номер должен быть формата "+7999..."!',
+                  pattern: PHONE_NUMBER_RULE.pattern,
+                  message: PHONE_NUMBER_RULE.message,
                 },
               ]}
             >

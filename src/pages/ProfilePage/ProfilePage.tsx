@@ -1,13 +1,15 @@
 import { FC, ReactNode, useEffect } from "react";
-import { Button, notification } from "antd";
+import { Button, notification, Tag, Typography } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { getUserProfile, logoutUser } from "../../store/slices/authSlice.ts";
 import s from "./ProfilePage.module.scss";
 
 const ProfilePage: FC = (): ReactNode => {
+  const { Title, Text } = Typography;
   const { user, isLoading } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  console.log(user);
 
   const onLogoutClick = async () => {
     await dispatch(logoutUser());
@@ -27,18 +29,18 @@ const ProfilePage: FC = (): ReactNode => {
   return (
     <div className={s.wrapper}>
       <div className={s.inner}>
-        <h2>Profile</h2>
-        <h2>Имя: {user?.username}</h2>
-        <h3>Почта: {user?.email}</h3>
-        <div style={{ display: "flex", gap: "10px" }}>
-          Роли: {user?.roles.map((item) => <h3 key={item}>{item}</h3>)}
-        </div>
-        <h3>
+        <Title>Profile</Title>
+        <Text className={s.userData}>Имя: {user?.username}</Text>
+        <Text className={s.userData}>Почта: {user?.email}</Text>
+        <Text className={s.userData}>
           Телефон:{" "}
           {user?.phoneNumber.length === 0
             ? "Номер не указан"
             : user?.phoneNumber}
-        </h3>
+        </Text>
+        <div className={s.roles}>
+          Роли: {user?.roles.map((item) => <Tag key={item}>{item}</Tag>)}
+        </div>
       </div>
       <Button
         onClick={onLogoutClick}

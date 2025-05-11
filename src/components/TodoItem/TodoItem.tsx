@@ -92,10 +92,6 @@ const TodoItem: FC<TodoItemProps> = ({ item, fetchTodos }): ReactNode => {
                 whitespace: true,
                 message: "Название не может состоять из пробелов!",
               },
-              {
-                pattern: /^[A-Za-z0-9\s\-_,\.;:()]+$/,
-                message: "Только латинские буквы и цифры!",
-              },
             ]}
           >
             <Input

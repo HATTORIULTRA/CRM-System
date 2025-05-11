@@ -1,11 +1,11 @@
 class TokenHelper {
   #accessToken: string | null = null;
 
-  set setAccessToken(token: string | null) {
+  set accessToken(token: string | null) {
     this.#accessToken = token;
   }
 
-  set setRefreshTokenToLocalStorage(token: string) {
+  set refreshTokenToLocalStorage(token: string) {
     window.localStorage.setItem("refreshToken", token);
   }
 

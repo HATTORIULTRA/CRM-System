@@ -3,7 +3,8 @@ import { FormProps, Button, Form, Input } from "antd";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { loginUser } from "../../store/slices/authSlice.ts";
-import { AuthData } from "../../types/IAuth.ts";
+import { AuthData } from "../../types/auth.ts";
+import { PASSWORD_LENGTH_RULE, USERNAME_LENGTH_RULES } from "../../constans/authValidation.tsx";
 
 const Login: FC = (): ReactNode => {
   const [form] = Form.useForm();
@@ -29,18 +30,19 @@ const Login: FC = (): ReactNode => {
         <Form.Item
           label="Login"
           name="login"
+          initialValue={""}
           rules={[
             {
               required: true,
               message: "Введите логин!",
             },
             {
-              min: 2,
-              message: "Количество символов должно быть больше 2!",
+              min: USERNAME_LENGTH_RULES.min,
+              message: USERNAME_LENGTH_RULES.messageMin,
             },
             {
-              max: 60,
-              message: "Количество символов должно быть меньше 60!",
+              max: USERNAME_LENGTH_RULES.max,
+              message: USERNAME_LENGTH_RULES.messageMax,
             },
             {
               whitespace: true,
@@ -53,18 +55,19 @@ const Login: FC = (): ReactNode => {
         <Form.Item
           label="Password"
           name="password"
+          initialValue={""}
           rules={[
             {
               required: true,
               message: "Введите пароль!",
             },
             {
-              min: 2,
-              message: "Количество символов должно быть больше 2!",
+              min: PASSWORD_LENGTH_RULE.min,
+              message: PASSWORD_LENGTH_RULE.messageMin,
             },
             {
-              max: 60,
-              message: "Количество символов должно быть меньше 60!",
+              max: PASSWORD_LENGTH_RULE.max,
+              message: PASSWORD_LENGTH_RULE.messageMax,
             },
           ]}
         >

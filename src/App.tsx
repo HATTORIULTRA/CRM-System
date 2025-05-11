@@ -25,7 +25,6 @@ const App: FC = (): ReactNode => {
       setAppLoading(false);
       return;
     };
-
     checkAuthStatus();
   }, []);
 

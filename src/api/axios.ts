@@ -25,7 +25,8 @@ instance.interceptors.response.use(
       error.response?.status === 401 &&
       !originalRequest._retry &&
       originalRequest.url !== "/auth/refresh" &&
-      originalRequest.url !== "auth/logout"
+      originalRequest.url !== "auth/logout" &&
+      originalRequest.url !== "/auth/signin"
     ) {
       originalRequest._retry = true;
       try {
@@ -37,8 +38,8 @@ instance.interceptors.response.use(
           { withCredentials: true }
         );
 
-        tokenHelper.setAccessToken = res.data.accessToken;
-        tokenHelper.setRefreshTokenToLocalStorage = res.data.refreshToken;
+        tokenHelper.accessToken = res.data.accessToken;
+        tokenHelper.refreshTokenToLocalStorage = res.data.refreshToken;
 
         axios.defaults.headers.common["Authorization"] =
           tokenHelper.tokenFromHelper.accessToken;
@@ -46,8 +47,9 @@ instance.interceptors.response.use(
         return instance.request(originalRequest);
       } catch (e) {
         console.log(e);
-        tokenHelper.setAccessToken = null;
+        tokenHelper.accessToken = null;
         tokenHelper.removeRefreshTokenFromLS();
+        location.href = "/auth/login";
       }
     }
     throw error;

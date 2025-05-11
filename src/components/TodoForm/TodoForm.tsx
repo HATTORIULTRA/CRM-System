@@ -4,7 +4,7 @@ import { Button, Form, Input } from "antd";
 import { addNewTodo } from "../../api/todosAPI.ts";
 import { TodoInfo } from "../../types/apiTypes.ts";
 import s from "./TodoForm.module.scss";
-import { TODO_VALUE_RULE } from "../../constans/validation.ts";
+import { TODO_VALUE_RULE } from "../../constans/todoValidation.ts";
 
 interface TodoFormProps {
   fetchTodos: () => void;

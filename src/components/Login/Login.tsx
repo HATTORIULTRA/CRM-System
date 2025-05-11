@@ -4,10 +4,7 @@ import { FormProps, Button, Form, Input } from "antd";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { loginUser } from "../../store/slices/authSlice.ts";
 import { AuthData } from "../../types/auth.ts";
-import {
-  PASSWORD_LENGTH_RULE,
-  USERNAME_LENGTH_RULES,
-} from "../../constans/validation.ts";
+import { PASSWORD_LENGTH_RULE, USERNAME_LENGTH_RULES } from "../../constans/authValidation.tsx";
 
 const Login: FC = (): ReactNode => {
   const [form] = Form.useForm();

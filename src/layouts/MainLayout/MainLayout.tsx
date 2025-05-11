@@ -45,6 +45,8 @@ const MainLayout: FC = (): ReactNode => {
   const selectedPage = () =>
     indexOfPages.find((item) => item.path === location.pathname)?.index || "1";
 
+  const selectedPageResult = selectedPage();
+
   const items: MenuItem[] = [
     getItem(<Link to="/">Todos</Link>, "1", <FormOutlined />),
     getItem(<Link to="/profile">My Profile</Link>, "2", <UserOutlined />),
@@ -78,7 +80,7 @@ const MainLayout: FC = (): ReactNode => {
         <Menu
           style={{ userSelect: "none" }}
           theme="dark"
-          defaultSelectedKeys={[selectedPage()]}
+          defaultSelectedKeys={[selectedPageResult]}
           mode="inline"
           items={items}
         />

@@ -38,7 +38,7 @@ const AppRouter: FC = (): ReactNode => {
           <Route path="todo" element={<TodoPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="users/:userId" element={<UserProfilePage />} />
-          {(user && isAdmin) || (user && isModerator) ? (
+          {user && (isAdmin || isModerator) ? (
             <Route path="users" element={<UsersPage />} />
           ) : (
             <Route path="*" element={<ErrorPage />} />

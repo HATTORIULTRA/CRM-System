@@ -11,11 +11,7 @@ import { UserRequest } from "../../types/admin.ts";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner.tsx";
 import s from "./UserProfilePage.module.scss";
 import isDirtyHelper from "../../helpers/isDirty.helper.ts";
-import {
-  PHONE_NUMBER_RULE,
-  USERNAME_LENGTH_RULES,
-  USERNAME_PATTERN_RULE,
-} from "../../constans/validation.ts";
+import { PHONE_NUMBER_RULE, USERNAME_LENGTH_RULES, USERNAME_PATTERN_RULE } from "../../constans/authValidation.tsx";
 
 const UserProfilePage = () => {
   const { Title, Text } = Typography;

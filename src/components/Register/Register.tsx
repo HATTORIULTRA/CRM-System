@@ -7,11 +7,10 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 import { UserRegistration } from "../../types/auth.ts";
 import {
   LOGIN_PATTERN_RULE,
-  PASSWORD_LENGTH_RULE,
-  PHONE_NUMBER_RULE,
+  PASSWORD_LENGTH_RULE, PHONE_NUMBER_RULE,
   USERNAME_LENGTH_RULES,
   USERNAME_PATTERN_RULE,
-} from "../../constans/validation.ts";
+} from "../../constans/authValidation.tsx";
 
 const Register: FC = (): ReactNode => {
   const [form] = Form.useForm();

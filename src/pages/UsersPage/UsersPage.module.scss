@@ -1,0 +1,24 @@
+.wrapper {
+  margin: 40px auto;
+  .inner {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    .searchBlock {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      .searchInput {
+        width: 500px;
+        height: 45px;
+      }
+    }
+  }
+}

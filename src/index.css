@@ -1,45 +1,32 @@
 * {
-	padding: 0;
-	margin: 0;
-	border: none;
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 
 *,
 *::before,
 *::after {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-	font-family: "Nunito", serif;
-	font-optical-sizing: auto;
-	font-weight: 400;
-	font-style: normal;
+  font-family: "Nunito", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 
-	background-color: #f1f4f9;
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	/*height: 100vh;*/
-	margin: 0;
-	padding-top: 200px;
-}
-
-.app {
-	min-width: 500px;
-	width: 100%;
-	margin: 0 auto;
+  background-color: #f1f4f9;
 }
 
 a,
 a:link,
 a:visited {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 a:hover {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 h1,
@@ -49,8 +36,8 @@ h4,
 h5,
 h6,
 p {
-	font-size: inherit;
-	font-weight: inherit;
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 ol,
@@ -58,9 +45,33 @@ ol li,
 ul,
 ul li,
 li {
-	list-style: none;
+  list-style: none;
 }
 
 button {
-	cursor: pointer;
+  cursor: pointer;
+}
+
+.demo-logo-vertical {
+  margin: 10px 0 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #a6adb4;
+  font-weight: 500;
+  font-size: 24px;
+}
+
+.logoText {
+  opacity: 0;
+  animation: showAnim 0.3s ease-in forwards;
+}
+
+@keyframes showAnim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

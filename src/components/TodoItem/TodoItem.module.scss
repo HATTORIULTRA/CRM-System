@@ -1,0 +1,17 @@
+.form {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+
+  .editInput {
+    width: 500px;
+  }
+}
+
+.todoText {
+  font-size: 18px;
+}
+
+.button {
+  margin-right: 18px;
+}
